@@ -3,14 +3,26 @@
 @section('content')
 <div class="container py-4">
     <h4 class="mb-4 fw-bold text-primary">All Users</h4>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
     <form method="GET" action="{{ route('admin.teachers.index') }}" class="mb-3">
-        <div class="input-group " style="max-width: 300px;">
+        <div class="input-group" style="max-width: 520px;">
             <select name="role" class="form-select border-1 bg-white" onchange="this.form.submit()">
                 <option value="">All Users</option>
                 <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admins</option>
                 <option value="teacher" {{ request('role') == 'teacher' ? 'selected' : '' }}>Teachers</option>
                 <option value="student" {{ request('role') == 'student' ? 'selected' : '' }}>Students</option>
+            </select>
+            <select name="status" class="form-select border-1 bg-white" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
             </select>
         </div>
     </form>
@@ -25,6 +37,7 @@
                             <th class="py-3">Name</th>
                             <th class="py-3">Email</th>
                             <th class="py-3">Role</th>
+                            <th class="py-3">Status</th>
                             <th class="py-3">Created</th>
                             <th class="py-3 text-center">Action</th>
                         </tr>
@@ -54,6 +67,21 @@
                                         {{ ucfirst($user->role) }}
                                     </span>
                                 </td>
+                                <td>
+                                    @if(in_array($user->role, ['student','teacher']))
+                                        @php $status = $user->account_status ?? 'pending'; @endphp
+                                        <span class="badge
+                                            @if($status === 'approved') bg-success
+                                            @elseif($status === 'pending') bg-warning text-dark
+                                            @elseif($status === 'rejected') bg-danger
+                                            @else bg-secondary
+                                            @endif">
+                                            {{ ucfirst($status) }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
                                 <td>{{ $user->created_at->diffForHumans() }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('admin.teachers.show', $user->id) }}" 
@@ -74,11 +102,26 @@
                                             <i class="fas fa-trash-alt fa-lg"></i>
                                         </button>
                                     </form>
+
+                                    @if(in_array($user->role, ['student','teacher']) && (($user->account_status ?? 'pending') === 'pending'))
+                                        <form method="POST" action="{{ route('admin.teachers.approve', $user->id) }}" class="d-inline ms-1">
+                                            @csrf
+                                            <button type="submit" class="btn btn-link text-success p-0 m-0" title="Approve">
+                                                <i class="fas fa-check-circle fa-lg"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.teachers.reject', $user->id) }}" class="d-inline ms-1">
+                                            @csrf
+                                            <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Reject">
+                                                <i class="fas fa-times-circle fa-lg"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">No users found.</td>
+                                <td colspan="7" class="text-center text-muted py-4">No users found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -88,7 +131,7 @@
     </div>
 
     <div class="d-flex justify-content-center mt-3">
-        {{ $users->appends(['role' => request('role')])->links() }}
+        {{ $users->appends(['role' => request('role'), 'status' => request('status')])->links() }}
     </div>
 </div>
 @endsection

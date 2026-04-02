@@ -26,7 +26,6 @@
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/aos.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/swiper-bundle.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/perfect-scrollbar.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/jquery.powertip.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/glightbox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/flatpickr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/ion.rangeSlider.min.css') }}">

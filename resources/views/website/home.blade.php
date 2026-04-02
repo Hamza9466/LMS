@@ -28,7 +28,6 @@
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/aos.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/swiper-bundle.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/perfect-scrollbar.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/jquery.powertip.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/glightbox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/flatpickr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/website/css/plugins/ion.rangeSlider.min.css') }}">
@@ -39,6 +38,16 @@
 </head>
 
 <body>
+    @php
+        $registrationBanner = session('auth_success');
+    @endphp
+    @if ($registrationBanner)
+        <div class="alert alert-success border-0 rounded-0 mb-0 text-center py-3 shadow-sm"
+            style="position: relative; z-index: 2000;"
+            role="alert">
+            {{ $registrationBanner }}
+        </div>
+    @endif
 
     <main class="main-wrapper">
 
@@ -71,9 +80,8 @@
 
                         <!-- Header Logo Start -->
                         <div class="header-logo">
-               <a class="header-logo__logo" href="index.html"> <img src="{{ asset('assets/website/images/home/white-logo.webp') }}"
+               <a class="header-logo__logo" href="{{ route('home') }}"> <img src="{{ asset('assets/website/images/home/white-logo.webp') }}"
      alt="Logo" width="150" height="32"></a>
-                            </a>
                         </div>
                         <!-- Header Logo End -->
 
@@ -121,61 +129,20 @@
                             <div class="header-navigation d-none d-xl-block">
                                 <nav class="menu-primary">
                                     <ul class="menu-primary__container">
-                                        <li><a class="active" href="#"><span>Demo</span></a>
-
-                                            {{-- <ul class="mega-menu">
-                                                <li>
-                                                    <!-- Mega Menu Content Start -->
-                                                    <div class="mega-menu-content">
-                                                        <div class="row">
-                                                            <div class="col-xl-3">
-                                                                <div class="menu-content-list">
-                                                                    <a href="{{ route('home') }}"
-                                                                        class="menu-content-list__link">Main Demo <span
-                                                                            class="badge hot">Hot</span></a>
-                                                                    <a href="{{ route('course_hub') }}"
-                                                                        class="menu-content-list__link">Course Hub</a>
-
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-3">
-                                                                <div class="menu-content-list">
-                                                                    <a href="index-language-academic.html"
-                                                                        class="menu-content-list__link">Language
-                                                                        Academic</a>
-                                                                    <a href="index-single-instructor.html"
-                                                                        class="menu-content-list__link">Single
-                                                                        Instructor</a>
-                                                                    <a href="index-dev.html"
-                                                                        class="menu-content-list__link">Dev <span
-                                                                            class="badge new">New</span></a>
-                                                                    <a href="index-online-art.html"
-                                                                        class="menu-content-list__link">Online Art <span
-                                                                            class="badge new">New</span></a>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-6">
-                                                                <div class="menu-content-banner"
-                                                                    style="background-image: url(assets/images/home-megamenu-bg.jpg);">
-                                                                    <h4 class="menu-content-banner__title">Achieve Your
-                                                                        Goals With EduMall</h4>
-                                                                    <a href="#"
-                                                                        class="menu-content-banner__btn btn btn-primary btn-hover-secondary">Purchase
-                                                                        now</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Mega Menu Content Start -->
-                                                </li>
-                                            </ul> --}}
-
-
-
-
+                                        <li><a class="{{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}"><span>Home</span></a></li>
+                                        <li><a class="{{ request()->routeIs('CourseGrid') || request()->routeIs('CourseDetail') ? 'active' : '' }}" href="{{ route('CourseGrid') }}"><span>Courses</span></a></li>
+                                        <li>
+                                            <a href="#" class="{{ request()->routeIs('course_hub', 'Blog', 'BlogDetail', 'about', 'Contact', 'faqs', 'membership') ? 'active' : '' }}"><span>Pages</span></a>
+                                            <ul class="sub-menu">
+                                                <li><a class="{{ request()->routeIs('course_hub') ? 'active' : '' }}" href="{{ route('course_hub') }}"><span>Course Hub</span></a></li>
+                                                <li><a class="{{ request()->routeIs('Blog') || request()->routeIs('BlogDetail') ? 'active' : '' }}" href="{{ route('Blog') }}"><span>Blog</span></a></li>
+                                                <li><a href="{{ route('about') }}"><span>About us</span></a></li>
+                                                <li><a href="{{ route('Contact') }}"><span>Contact us</span></a></li>
+                                                <li><a href="{{ route('faqs') }}"><span>FAQs</span></a></li>
+                                                <li><a href="{{ route('membership') }}"><span>Membership plans</span></a></li>
+                                            </ul>
                                         </li>
-                                        <li><a href="{{ route('course_hub') }}"><span>Course Hub</span></a>
-                                        </li>
+                                        <li><a class="{{ request()->routeIs('Zoom') ? 'active' : '' }}" href="{{ route('Zoom') }}"><span>Zoom Meetings</span></a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -290,7 +257,7 @@
         </div>
         <!-- Header End -->
 
-
+        @include('website.partials.mobile-offcanvas')
 
         <!-- Slider Section Start -->
         <div class="slider-section">
@@ -386,99 +353,6 @@
             </div>
         </div>
         <!-- Slider Section End -->
-
-        <!-- Offcanvas Start -->
-        <div class="offcanvas offcanvas-end offcanvas-mobile" id="offcanvasMobileMenu"
-            style="background-image: url(assets/images/mobile-bg.jpg);">
-            <div class="offcanvas-header bg-white">
-                <div class="offcanvas-logo">
-                    <a class="header-logo__logo" href="index.html"> <img src="{{ asset('assets/website/images/home/white-logo.webp') }}"
-     alt="Logo" width="150" height="32"></a>
-                </div>
-                <button type="button" class="offcanvas-close" data-bs-dismiss="offcanvas"><i
-                        class="fas fa-times"></i></button>
-            </div>
-
-            <div class="offcanvas-body">
-                <nav class="canvas-menu">
-                    <ul class="offcanvas-menu">
-                        <li><a class="active" href="#"><span>Demo</span></a>
-
-                            {{-- <ul class="mega-menu">
-                                <li>
-                                    <!-- Mega Menu Content Start -->
-                                    <div class="mega-menu-content">
-                                        <div class="row">
-                                            <div class="col-xl-3">
-                                                {{-- <div class="menu-content-list">
-                                                    <a href="{{ route('home') }}"
-                                                        class="menu-content-list__link">Main
-                                                        Demo <span class="badge hot">Hot</span></a>
-                                                    <a href="{{ route('course_hub') }}"
-                                                        class="menu-content-list__link">Course Hub</a>
-                                                    <a href="index-online-academy.html"
-                                                        class="menu-content-list__link">Online Academy <span
-                                                            class="badge hot">Hot</span></a>
-                                                    <a href="index-university.html"
-                                                        class="menu-content-list__link">University</a>
-                                                    <a href="index-education-center.html"
-                                                        class="menu-content-list__link">Education Center <span
-                                                            class="badge hot">Hot</span></a>
-                                                </div> --}}
-                                            </div>
-                                            <div class="col-xl-3">
-                                                <div class="menu-content-list">
-                                                    <a href="index-language-academic.html"
-                                                        class="menu-content-list__link">Language Academic</a>
-                                                    <a href="index-single-instructor.html"
-                                                        class="menu-content-list__link">Single Instructor</a>
-                                                    <a href="index-dev.html" class="menu-content-list__link">Dev <span
-                                                            class="badge new">New</span></a>
-                                                    <a href="index-online-art.html"
-                                                        class="menu-content-list__link">Online Art <span
-                                                            class="badge new">New</span></a>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="menu-content-banner"
-                                                    style="background-image: url(assets/images/home-megamenu-bg.jpg);">
-                                                    <h4 class="menu-content-banner__title">Achieve Your Goals With
-                                                        EduMall</h4>
-                                                    <a href="#"
-                                                        class="menu-content-banner__btn btn btn-primary btn-hover-secondary">Purchase
-                                                        now</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Mega Menu Content Start -->
-                                </li>
-                            </ul> 
-
-
-
-
-                        </li>
-                        {{-- <li><a href="#"><span>Become an Instructor</span></a></li> --}}
-                    </ul>
-                </nav>
-            </div>
-
-            <!-- Header User Button Start -->
-            <div class="offcanvas-user d-lg-none">
-                <div class="offcanvas-user__button">
-                    <button class="offcanvas-user__login btn btn-secondary btn-hover-secondarys"
-                        data-bs-toggle="modal" data-bs-target="#loginModal">Log In</button>
-                </div>
-                <div class="offcanvas-user__button">
-                    <button class="offcanvas-user__signup btn btn-primary btn-hover-primary" data-bs-toggle="modal"
-                        data-bs-target="#registerModal">Sign Up</button>
-                </div>
-            </div>
-            <!-- Header User Button End -->
-
-        </div>
-        <!-- Offcanvas End -->
 
         <!-- Features Section Start -->
         <div class="features-section bg-color-primary">
@@ -1831,12 +1705,26 @@
                                 data-bs-target="#registerModal">Sign up for free</button></p>
                     </div>
                     <div class="modal-body">
+                        @if (session('auth_error'))
+                            <div class="alert alert-danger">{{ session('auth_error') }}</div>
+                        @endif
+
+                        @if ($errors->login->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0 mt-2">
+                                    @foreach ($errors->login->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <form action="{{ route('login.post') }}" method="POST">
                             @csrf
                             <div class="modal-form">
                                 <label class="form-label">Username or email</label>
                                 <input type="text" name="login" class="form-control"
-                                    placeholder="Your username or email" required>
+                                    placeholder="Your username or email" value="{{ old('login') }}" required>
                             </div>
                             <div class="modal-form">
                                 <label class="form-label">Password</label>
@@ -1857,19 +1745,6 @@
                                     In</button>
                             </div>
                         </form>
-
-
-                        <div class="modal-social-option">
-                            <p>or Log-in with</p>
-
-                            <ul class="modal-social-btn">
-                                <li><a href="#" class="btn facebook"><i class="fab fa-facebook-square"></i>
-                                        Gacebook</a>
-                                </li>
-                                <li><a href="#" class="btn google"><i class="fab fa-google"></i> Google</a>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
                 <!-- Modal Content End -->
@@ -1899,19 +1774,15 @@
                     <div class="modal-body">
 
                         <!-- Global alerts -->
-                        @if (session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @if (session('auth_error') && session('openAuthModal') === 'register')
+                            <div class="alert alert-danger">{{ session('auth_error') }}</div>
                         @endif
 
-                        @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
-
-                        @if ($errors->any())
+                        @if ($errors->register->any())
                             <div class="alert alert-danger">
                                 <strong>There were some problems with your input:</strong>
                                 <ul class="mb-0 mt-2">
-                                    @foreach ($errors->all() as $error)
+                                    @foreach ($errors->register->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
@@ -1922,6 +1793,19 @@
                         <form action="{{ route('register.post') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row gy-4">
+                                <div class="col-12">
+                                    <input type="hidden" name="register_role" id="registerRoleInput"
+                                        value="{{ old('register_role', 'student') }}">
+                                    <p class="mb-0">
+                                        <a href="#" id="toggleTeacherApply" class="text-primary fw-semibold">
+                                            Apply for teacher role
+                                        </a>
+                                    </p>
+                                    @error('register_role', 'register')
+                                        <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                    @enderror
+                                    <small class="text-muted d-block mt-1">Teacher accounts require admin approval before login.</small>
+                                </div>
 
                                 <!-- First Name -->
                                 <div class="col-md-6">
@@ -1991,7 +1875,7 @@
                                 </div>
 
                                 <!-- Gender -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Gender</label>
                                     <select name="gender" class="form-control">
                                         <option value="">Select Gender</option>
@@ -2008,7 +1892,7 @@
                                 </div>
 
                                 <!-- Date of Birth -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Date of Birth</label>
                                     <input type="date" name="dob" class="form-control"
                                         value="{{ old('dob') }}">
@@ -2018,7 +1902,7 @@
                                 </div>
 
                                 <!-- Address -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Address</label>
                                     <input type="text" name="address" class="form-control"
                                         value="{{ old('address') }}">
@@ -2028,7 +1912,7 @@
                                 </div>
 
                                 <!-- City -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">City</label>
                                     <input type="text" name="city" class="form-control"
                                         value="{{ old('city') }}">
@@ -2038,7 +1922,7 @@
                                 </div>
 
                                 <!-- Country -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Country</label>
                                     <input type="text" name="country" class="form-control"
                                         value="{{ old('country') }}">
@@ -2048,7 +1932,7 @@
                                 </div>
 
                                 <!-- Institute Name -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Institute Name</label>
                                     <input type="text" name="institute_name" class="form-control"
                                         value="{{ old('institute_name') }}">
@@ -2058,7 +1942,7 @@
                                 </div>
 
                                 <!-- Program Name -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Program Name</label>
                                     <input type="text" name="program_name" class="form-control"
                                         value="{{ old('program_name') }}">
@@ -2068,13 +1952,33 @@
                                 </div>
 
                                 <!-- Enrollment Year -->
-                                <div class="col-md-6">
+                                <div class="col-md-6 student-only">
                                     <label class="form-label">Enrollment Year</label>
                                     <input type="text" name="enrollment_year" class="form-control"
                                         value="{{ old('enrollment_year') }}">
                                     @error('enrollment_year')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
+                                </div>
+
+                                <div class="col-md-6 teacher-only" style="display:none;">
+                                    <label class="form-label">Qualification</label>
+                                    <input type="text" name="qualification" class="form-control" value="{{ old('qualification') }}">
+                                </div>
+
+                                <div class="col-md-6 teacher-only" style="display:none;">
+                                    <label class="form-label">Experience</label>
+                                    <input type="text" name="experience" class="form-control" value="{{ old('experience') }}">
+                                </div>
+
+                                <div class="col-md-6 teacher-only" style="display:none;">
+                                    <label class="form-label">Specialization</label>
+                                    <input type="text" name="specialization" class="form-control" value="{{ old('specialization') }}">
+                                </div>
+
+                                <div class="col-md-12 teacher-only" style="display:none;">
+                                    <label class="form-label">Bio</label>
+                                    <textarea name="bio" class="form-control" rows="3">{{ old('bio') }}</textarea>
                                 </div>
 
                                 <!-- Profile Image -->
@@ -2101,7 +2005,7 @@
 
                                 <!-- Submit -->
                                 <div class="col-md-12">
-                                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                                    <button type="submit" class="btn btn-primary w-100" id="registerSubmitBtn">Register</button>
                                 </div>
                             </div>
                         </form>
@@ -2140,7 +2044,6 @@
     <script src="{{ asset('assets/website/js/plugins/parallax.js') }}"></script>
     <script src="{{ asset('assets/website/js/plugins/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('assets/website/js/plugins/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('assets/website/js/plugins/jquery.powertip.min.js') }}"></script>
     <script src="{{ asset('assets/website/js/plugins/nice-select.min.js') }}"></script>
     <script src="{{ asset('assets/website/js/plugins/glightbox.min.js') }}"></script>
     <script src="{{ asset('assets/website/js/plugins/jquery.sticky-kit.min.js') }}"></script>
@@ -2152,6 +2055,67 @@
 
     <!-- Activation JS -->
     <script src="{{ asset('assets/website/js/main.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const openModal = @json(session('openAuthModal'));
+            const hasLoginErrors = @json($errors->login->any());
+            const hasRegisterErrors = @json($errors->register->any());
+
+            let target = null;
+            if (openModal === 'login' || hasLoginErrors) target = 'loginModal';
+            if (openModal === 'register' || hasRegisterErrors) target = 'registerModal';
+
+            if (target && window.bootstrap) {
+                const el = document.getElementById(target);
+                if (el) new bootstrap.Modal(el).show();
+            }
+
+            const registerRoleInput = document.getElementById('registerRoleInput');
+            const toggleTeacherApply = document.getElementById('toggleTeacherApply');
+            const registerSubmitBtn = document.getElementById('registerSubmitBtn');
+
+            const setRegisterMode = function (mode) {
+                const isTeacher = mode === 'teacher';
+                if (registerRoleInput) registerRoleInput.value = isTeacher ? 'teacher' : 'student';
+
+                document.querySelectorAll('.teacher-only').forEach(function (el) {
+                    el.style.display = isTeacher ? '' : 'none';
+                });
+                document.querySelectorAll('.student-only').forEach(function (el) {
+                    el.style.display = isTeacher ? 'none' : '';
+                });
+
+                if (toggleTeacherApply) {
+                    toggleTeacherApply.textContent = isTeacher ? 'Back to student registration' : 'Apply for teacher role';
+                }
+                if (registerSubmitBtn) {
+                    registerSubmitBtn.textContent = isTeacher ? 'Apply as Teacher' : 'Register';
+                }
+            };
+
+            const initialMode = @json(old('register_role', 'student'));
+            setRegisterMode(initialMode === 'teacher' ? 'teacher' : 'student');
+
+            if (toggleTeacherApply) {
+                toggleTeacherApply.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const current = registerRoleInput && registerRoleInput.value === 'teacher' ? 'teacher' : 'student';
+                    setRegisterMode(current === 'teacher' ? 'student' : 'teacher');
+                });
+            }
+
+            try {
+                var u = new URL(window.location.href);
+                if (u.searchParams.has('registered') || u.searchParams.has('role')) {
+                    u.searchParams.delete('registered');
+                    u.searchParams.delete('role');
+                    var qs = u.searchParams.toString();
+                    window.history.replaceState({}, '', u.pathname + (qs ? '?' + qs : '') + u.hash);
+                }
+            } catch (e) { /* ignore */ }
+        });
+    </script>
 </body>
 
 </html>

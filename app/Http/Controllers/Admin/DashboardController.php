@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Order;
+use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 
 class DashboardController extends Controller
 {
@@ -43,6 +45,25 @@ class DashboardController extends Controller
         // Earnings from paid orders
         $earnings = Order::where('status', 'paid')->sum('total');
 
+        $assignedCoursesCount = 0;
+        $createdAssignmentsCount = 0;
+        $studentSubmissionsCount = 0;
+
+        if (in_array($role, ['admin', 'teacher'], true)) {
+            if ($role === 'admin') {
+                $assignedCoursesCount = Course::whereHas('assignments')->count();
+                $createdAssignmentsCount = Assignment::count();
+                $studentSubmissionsCount = AssignmentSubmission::whereNotNull('submitted_at')->count();
+            } else {
+                $assignedCoursesCount = Course::where('teacher_id', $user->id)->count();
+                $createdAssignmentsCount = Assignment::where('teacher_id', $user->id)->count();
+                $studentSubmissionsCount = AssignmentSubmission::query()
+                    ->whereHas('assignment', fn ($q) => $q->where('teacher_id', $user->id))
+                    ->whereNotNull('submitted_at')
+                    ->count();
+            }
+        }
+
         return view('admin.dashboard', compact(
             'enrolledCoursesCount',
             'completedCoursesCount',
@@ -51,7 +72,10 @@ class DashboardController extends Controller
             'totalStudents',
             'earnings',
             'role',
-            'currencySymbol'
+            'currencySymbol',
+            'assignedCoursesCount',
+            'createdAssignmentsCount',
+            'studentSubmissionsCount'
         ));
     }
 }

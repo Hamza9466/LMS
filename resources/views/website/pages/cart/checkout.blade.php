@@ -199,20 +199,76 @@
           <div class="card-header fw-semibold">Payment</div>
           <div class="card-body">
             @auth
-              <form method="POST" action="{{ route('checkout.fake') }}"
-                    onsubmit="return confirm('Confirm your enrollment/payment?');">
+              @php
+                $payMethods = $payMethods ?? \App\Support\PaymentMethods::merged();
+              @endphp
+              <form method="POST" action="{{ route('checkout.fake') }}" enctype="multipart/form-data" id="checkoutPayForm">
                 @csrf
+                @if($total > 0)
                 <div class="mb-3">
-                  <label for="gateway" class="form-label">Select Payment Method</label>
+                  <label for="gateway" class="form-label">Select payment method</label>
                   <select id="gateway" name="gateway" class="form-select" required>
                     <option value="">-- Choose a method --</option>
-                    <option value="jazzcash">JazzCash</option>
-                    <option value="stripe">Stripe</option>
-                    <option value="manual">Manual Payment (Confirm & Enroll)</option>
+                    @foreach($payMethods as $key => $meta)
+                      @php
+                        $num = $meta['number'] ?? '';
+                        $showNum = $num !== '' && $num !== '—';
+                      @endphp
+                      <option value="{{ $key }}">{{ $meta['label'] ?? ucfirst($key) }}{{ $showNum ? ' — '.$num : '' }}</option>
+                    @endforeach
                   </select>
                 </div>
-                <button class="btn btn-success w-100">Buy Now</button>
+                <div class="mb-3 p-3 bg-light rounded border" id="payment-instructions-wrap" style="display:none;">
+                  <div class="fw-semibold small text-uppercase text-muted mb-2">Account / payment details</div>
+                  <div id="payment-method-label" class="fw-semibold mb-1"></div>
+                  <div id="payment-method-number" class="fs-6 text-primary mb-2 font-monospace"></div>
+                  <div id="payment-instructions" class="small text-body-secondary" style="white-space:pre-wrap;"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="payment_proof" class="form-label">Upload payment screenshot <span class="text-danger">*</span></label>
+                  <input type="file" name="payment_proof" id="payment_proof" class="form-control" accept="image/*" required>
+                  <div class="form-text">PNG, JPG, or WebP (max 5 MB). Your enrollment is activated after admin approval.</div>
+                </div>
+                @else
+                <p class="small text-muted mb-3">No payment required. Submit to complete free enrollment.</p>
+                <input type="hidden" name="gateway" value="manual">
+                @endif
+                <button type="submit" class="btn btn-success w-100">{{ $total > 0 ? 'Submit for verification' : 'Complete enrollment' }}</button>
               </form>
+              @if($total > 0)
+              <script>
+                (function () {
+                  var methods = @json($payMethods);
+                  var sel = document.getElementById('gateway');
+                  var wrap = document.getElementById('payment-instructions-wrap');
+                  var elLabel = document.getElementById('payment-method-label');
+                  var elNumber = document.getElementById('payment-method-number');
+                  var elDetail = document.getElementById('payment-instructions');
+                  function sync() {
+                    var g = sel && sel.value;
+                    var m = g && methods[g];
+                    if (!m) {
+                      wrap.style.display = 'none';
+                      if (elLabel) elLabel.textContent = '';
+                      if (elNumber) elNumber.textContent = '';
+                      if (elDetail) elDetail.textContent = '';
+                      return;
+                    }
+                    wrap.style.display = 'block';
+                    if (elLabel) elLabel.textContent = m.label || '';
+                    if (elNumber) {
+                      var n = m.number;
+                      elNumber.textContent = (n && n !== '—') ? ('Number / account: ' + n) : '';
+                    }
+                    if (elDetail) elDetail.textContent = m.detail || '';
+                  }
+                  if (sel) {
+                    sel.addEventListener('change', sync);
+                    sync();
+                  }
+                })();
+              </script>
+              @endif
             @endauth
 
             @guest

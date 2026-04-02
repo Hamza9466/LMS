@@ -65,6 +65,11 @@ use App\Http\Controllers\Admin\DiscussionController as AdminDiscussionController
 use App\Http\Controllers\Website\DiscussionController as WebsiteDiscussionController;
 use App\Http\Controllers\Website\AnnouncementController as WebsiteAnnouncementController;
 use App\Http\Controllers\Website\NotificationController as WebsiteNotificationController;
+use App\Http\Controllers\Admin\TeacherAssignmentController;
+use App\Http\Controllers\Admin\AssignmentAdminController;
+use App\Http\Controllers\Admin\StudentAssignmentController;
+use App\Http\Controllers\Admin\PaymentOrderController;
+use App\Http\Controllers\Admin\PaymentMethodSettingController;
 
 
 /* =============================================================== */
@@ -124,6 +129,8 @@ Route::middleware('auth')->get('/admin/dashboard', [DashboardController::class, 
 
     // Teachers CRUD (namespaced to admin.teachers.*)
     Route::resource('teachers', TeacherController::class)->names('admin.teachers');
+    Route::post('teachers/{user}/approve', [TeacherController::class, 'approve'])->name('admin.teachers.approve');
+    Route::post('teachers/{user}/reject', [TeacherController::class, 'reject'])->name('admin.teachers.reject');
 
 // Teacher: My Courses (only shows courses where teacher_id = auth()->id())
 
@@ -135,6 +142,8 @@ Route::middleware('auth')->get('/admin/dashboard', [DashboardController::class, 
 */
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile'); // admin.profile
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 /*
@@ -174,6 +183,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/transactions', [TransactionController::class, 'index'])->name('admin.transactions.index');
     Route::delete('/admin/transactions/{transaction}', [TransactionController::class, 'destroy'])
         ->name('admin.transactions.destroy');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('payment-orders', [PaymentOrderController::class, 'index'])->name('payment-orders.index');
+    Route::get('payment-orders/{order}', [PaymentOrderController::class, 'show'])->name('payment-orders.show');
+    Route::post('payment-orders/{order}/approve', [PaymentOrderController::class, 'approve'])->name('payment-orders.approve');
+    Route::post('payment-orders/{order}/reject', [PaymentOrderController::class, 'reject'])->name('payment-orders.reject');
+    Route::delete('payment-orders/{order}', [PaymentOrderController::class, 'destroy'])->name('payment-orders.destroy');
+
+    Route::get('payment-methods', [PaymentMethodSettingController::class, 'edit'])->name('payment-methods.edit');
+    Route::put('payment-methods', [PaymentMethodSettingController::class, 'update'])->name('payment-methods.update');
 });
 
 /*
@@ -260,6 +280,25 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     Route::post('lessons/{lesson}/discussions', [WebsiteDiscussionController::class, 'store'])->name('student.discussion.store');
     Route::get('discussions/{thread}', [WebsiteDiscussionController::class, 'show'])->name('student.discussion.show');
     Route::post('discussions/{thread}/reply', [WebsiteDiscussionController::class, 'reply'])->name('student.discussion.reply');
+
+    Route::get('assignments', [StudentAssignmentController::class, 'index'])->name('student.assignments.index');
+    Route::get('assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
+    Route::post('assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Teacher & admin: assignments + student monitor
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('teacher')->name('teacher.')->group(function () {
+    Route::get('assignments', [TeacherAssignmentController::class, 'index'])->name('assignments.index');
+    Route::get('assignments/create', [TeacherAssignmentController::class, 'create'])->name('assignments.create');
+    Route::post('assignments', [TeacherAssignmentController::class, 'store'])->name('assignments.store');
+    Route::get('assignments/{assignment}', [TeacherAssignmentController::class, 'show'])->name('assignments.show');
+    Route::post('assignment-submissions/{submission}/grade', [TeacherAssignmentController::class, 'gradeSubmission'])
+        ->name('assignments.submissions.grade');
+    Route::get('students/monitor', [TeacherAssignmentController::class, 'monitor'])->name('students.monitor');
 });
 
 /*
@@ -288,6 +327,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('quizzes/{quiz}/attempts/{user}', [QuizAttemptController::class, 'resetUser'])->name('quizzes.attempts.resetUser');
     Route::get('attempts/{attempt}',                [QuizAttemptController::class, 'show'])->name('attempts.show');
     Route::delete('attempts/{attempt}',             [QuizAttemptController::class, 'destroy'])->name('attempts.destroy');
+
+    // Assignments: admin overview (manage all, teacher activity, performance)
+    Route::get('assignments/manage', [AssignmentAdminController::class, 'manage'])->name('assignments.manage');
+    Route::get('assignments/teacher-activity', [AssignmentAdminController::class, 'teacherActivity'])->name('assignments.teacher-activity');
+    Route::get('assignments/performance', [AssignmentAdminController::class, 'performance'])->name('assignments.performance');
 
     // NOTE: Do NOT define student.* routes here; student routes live under /dashboard
 });

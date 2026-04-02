@@ -47,7 +47,7 @@
 
                         <!-- Header Logo Start -->
                         <div class="header-logo">
-                            <a class="header-logo__logo" href="index.html"> <img src="{{ asset('assets/website/images/home/white-logo.webp') }}"
+                            <a class="header-logo__logo" href="{{ route('home') }}"> <img src="{{ asset('assets/website/images/home/white-logo.webp') }}"
      alt="Logo" width="150" height="32"></a>
                         </div>
                         <!-- Header Logo End -->
@@ -152,44 +152,15 @@
                                             </ul> --}}
                                         </li>
                                         <li>
-                                            <a href="{{ route('Blog') }}"><span>Blog</span></a>
-                                             {{-- <ul class="sub-menu">
-                                                <li><a href="{{ route('Blog') }}"><span>Grid Basic Layout</span></a></li>
-                                                <li><a href="blog-grid-02.html"><span>Grid Wide</span></a></li>
-                                                <li><a href="blog-grid-left-sidebar.html"><span>Grid Left Sidebar</span></a></li>
-                                                <li><a href="blog-grid-right-sidebar.html"><span>Grid Right Sidebar</span></a></li>
-                                                <li><a href="blog-list-style-01.html"><span>List Layout 01</span></a></li>
-                                                <li><a href="blog-list-style-02.html"><span>List Layout 02</span></a></li>
-                                                <li>
-                                                    <a href="#"><span>Single Layouts</span></a>
-                                                    <ul class="sub-menu">
-                                                        <li><a href="blog-details-left-sidebar.html"><span>Left Sidebar</span></a></li>
-                                                        <li><a href="blog-details-right-sidebar.html"><span>Right Sidebar</span></a></li>
-                                                        <li><a href="blog-details.html"><span>No Sidebar</span></a></li>
-                                                    </ul>
-                                                </li>
-                                            </ul> --}}
-                                        </li>
-                                        <li>
-                                            <a href="#"><span>Pages</span></a>
+                                            <a href="#" class="{{ request()->routeIs('course_hub', 'Blog', 'BlogDetail', 'about', 'Contact', 'faqs') ? 'active' : '' }}"><span>Pages</span></a>
                                             <ul class="sub-menu">
-                                                <li>
+                                                <li><a class="{{ request()->routeIs('course_hub') ? 'active' : '' }}" href="{{ route('course_hub') }}"><span>Course Hub</span></a></li>
+                                                <li><a class="{{ request()->routeIs('Blog', 'BlogDetail') ? 'active' : '' }}" href="{{ route('Blog') }}"><span>Blog</span></a></li>
+                                                <li><a class="{{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}"><span>About us</span></a></li>
 
-                                                    {{-- <ul class="sub-menu">
-                                                        <li><a href="dashboard-my-courses.html"><span>My Courses</span></a></li>
-                                                        <li><a href="dashboard-announcement.html"><span>Announcements</span></a></li>
-                                                        <li><a href="dashboard-withdraw.html"><span>Withdrawals</span></a></li>
-                                                        <li><a href="dashboard-quiz-attempts.html"><span>Quiz Attempts</span></a></li>
-                                                        <li><a href="dashboard-question-answer.html"><span>Question & Answer</span></a></li>
-                                                        <li><a href="dashboard-assignments.html"><span>Assignments</span></a></li>
-                                                        <li><a href="dashboard-students.html"><span>My Students</span></a></li>
-                                                    </ul> --}}
-                                                </li>
-                                                <li><a href="{{ route('about') }}"><span>About us</span></a></li>
+                                                <li><a class="{{ request()->routeIs('Contact') ? 'active' : '' }}" href="{{ route('Contact') }}"><span>Contact us</span></a></li>
 
-                                                <li><a href="{{ route('Contact') }}"><span>Contact us</span></a></li>
-
-                                                <li><a href="{{ route('faqs') }}"><span>FAQs</span></a></li>
+                                                <li><a class="{{ request()->routeIs('faqs') ? 'active' : '' }}" href="{{ route('faqs') }}"><span>FAQs</span></a></li>
 
                                                 {{-- <li>
                                                     <a href="#"><span>Dashboard</span></a>
@@ -329,3 +300,5 @@
 
         </div>
         <!-- Header End -->
+
+        @include('website.partials.mobile-offcanvas')

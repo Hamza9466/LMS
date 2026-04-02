@@ -16,6 +16,7 @@ class TeacherController extends Controller
      public function index(Request $request)
     {
         $role = $request->get('role');
+        $status = $request->get('status');
 
         $query = User::query();
 
@@ -23,12 +24,21 @@ class TeacherController extends Controller
             $query->where('role', $role);
         }
 
+        if (in_array($status, ['pending', 'approved', 'rejected'], true)) {
+            if (in_array($role, ['teacher', 'student'], true)) {
+                $query->where('account_status', $status);
+            } elseif ($role !== 'admin') {
+                $query->whereIn('role', ['teacher', 'student'])
+                      ->where('account_status', $status);
+            }
+        }
+
         $users = $query
             ->with(['adminDetail', 'teacherDetail', 'studentDetail'])
             ->latest()
             ->paginate(10);
 
-        return view('admin.pages.all-users.all_users', compact('users', 'role'));
+        return view('admin.pages.all-users.all_users', compact('users', 'role', 'status'));
     }
 
     public function create(Request $request)
@@ -55,6 +65,7 @@ class TeacherController extends Controller
         'email' => $request->email,
         'role' => $request->role,
         'password' => Hash::make($request->password),
+        'account_status' => $request->role === 'admin' ? 'approved' : 'pending',
     ]);
 
     $profileImagePath = null;
@@ -205,5 +216,25 @@ class TeacherController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return redirect()->route('admin.teachers.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function approve(User $user)
+    {
+        if (!in_array($user->role, ['student', 'teacher'], true)) {
+            return back()->with('error', 'Only student/teacher accounts can be approved.');
+        }
+
+        $user->update(['account_status' => 'approved']);
+        return back()->with('success', ucfirst($user->role).' approved successfully.');
+    }
+
+    public function reject(User $user)
+    {
+        if (!in_array($user->role, ['student', 'teacher'], true)) {
+            return back()->with('error', 'Only student/teacher accounts can be rejected.');
+        }
+
+        $user->update(['account_status' => 'rejected']);
+        return back()->with('success', ucfirst($user->role).' rejected.');
     }
 }

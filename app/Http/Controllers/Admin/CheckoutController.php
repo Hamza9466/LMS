@@ -7,7 +7,9 @@ use App\Models\Course;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PersonalDiscount;
+use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends Controller
 {
@@ -41,7 +43,7 @@ class CheckoutController extends Controller
         return redirect()->route('cart.index')->with('success', 'Ready to checkout.');
     }
 
-    /** Fake/manual checkout: recompute totals with PD + coupon, store order, enroll */
+    /** Checkout: free orders enroll immediately; paid orders need payment proof → admin approval */
     public function fakeCheckout(Request $req)
     {
         $cart = session('cart', []);
@@ -77,16 +79,37 @@ class CheckoutController extends Controller
         $discount       = $personalDiscountTotal + $couponDiscount;
         $total          = max($subtotal - $discount, 0);
 
+        $allowedGateways = PaymentMethods::gatewayKeys();
+
+        if ($total <= 0) {
+            $validated = $req->validate([
+                'gateway' => ['nullable', 'string', 'in:'.implode(',', $allowedGateways ?: ['manual'])],
+            ]);
+            $gateway = $validated['gateway'] ?? 'manual';
+        } else {
+            $validated = $req->validate([
+                'gateway'       => ['required', 'string', 'in:'.implode(',', $allowedGateways ?: ['manual'])],
+                'payment_proof' => ['required', 'file', 'image', 'max:5120'],
+            ]);
+            $gateway = $validated['gateway'];
+        }
+
+        $proofPath = null;
+        if ($total > 0 && $req->hasFile('payment_proof')) {
+            $proofPath = $req->file('payment_proof')->store('payment-proofs', 'public');
+        }
+
         $order = Order::create([
-            'user_id'   => $userId,
-            'status'    => 'pending',
-            'currency'  => $currency,
-            'subtotal'  => $subtotal,
-            'discount'  => $discount,
-            'total'     => $total,
-            'gateway'   => 'manual',
-            'coupon_id' => $coupon['id'] ?? null,
-            'meta'      => [
+            'user_id'             => $userId,
+            'status'              => $total > 0 ? 'pending_verification' : 'pending',
+            'currency'            => $currency,
+            'subtotal'            => $subtotal,
+            'discount'            => $discount,
+            'total'               => $total,
+            'gateway'             => $gateway,
+            'coupon_id'           => $coupon['id'] ?? null,
+            'payment_proof_path'  => $proofPath,
+            'meta'                => [
                 'cart'                  => $cart,
                 'coupon'                => $coupon,
                 'personal_discount_sum' => $personalDiscountTotal,
@@ -101,31 +124,24 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // optional: bump uses
-        foreach ($cart as $row) {
-            $courseId = $this->rowCourseId($row);
-            if (!$courseId) continue;
-
-            $pd = PersonalDiscount::for($userId, $courseId)->active()->first();
-            if ($pd && ($pd->max_uses === null || $pd->uses < $pd->max_uses)) {
-                $pd->increment('uses');
-            }
+        if ($total <= 0) {
+            $order->markPaid('FREE-'.$order->id.'-'.now()->timestamp, ['note' => 'Zero total checkout']);
+            session()->forget(['cart', 'coupon']);
+            return redirect()->route('checkout.success', $order)
+                ->with('success', 'Enrollment confirmed.');
         }
 
-        // mark paid (or fallback)
-        if (method_exists($order, 'markPaid')) {
-            $order->markPaid('FAKE-'.now()->timestamp, ['note' => 'Manual confirmation']);
-        } else {
-            $order->update(['status' => 'paid']);
-        }
+        session()->forget(['cart', 'coupon']);
 
-        session()->forget(['cart','coupon']);
-
-        return redirect()->route('checkout.success', $order)->with('success', 'Enrollment confirmed.');
+        return redirect()->route('checkout.success', $order)
+            ->with('success', 'Payment proof received. An administrator will review and approve your enrollment shortly.');
     }
 
     public function success(Request $req, Order $order)
     {
+        if ((int) $order->user_id !== (int) auth()->id()) {
+            abort(403);
+        }
         $order->load('items');
         return view('website.pages.cart.success', compact('order'));
     }

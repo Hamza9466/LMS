@@ -53,6 +53,49 @@
                     </div>
                 </div>
 
+                {{-- Assignments overview (admin & teacher) --}}
+                @if(in_array($role, ['admin', 'teacher'], true))
+                <div class="col-md-4 col-sm-6">
+                    <div class="dashboard-info__card">
+                        <div class="dashboard-info__card-box">
+                            <div class="dashboard-info__card-icon icon-color-01">
+                                <i class="edumi edumi-layers"></i>
+                            </div>
+                            <div class="dashboard-info__card-content">
+                                <div class="dashboard-info__card-value">{{ number_format($assignedCoursesCount) }}</div>
+                                <div class="dashboard-info__card-heading">Assigned courses</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="dashboard-info__card">
+                        <div class="dashboard-info__card-box">
+                            <div class="dashboard-info__card-icon icon-color-02">
+                                <i class="edumi edumi-content-writing"></i>
+                            </div>
+                            <div class="dashboard-info__card-content">
+                                <div class="dashboard-info__card-value">{{ number_format($createdAssignmentsCount) }}</div>
+                                <div class="dashboard-info__card-heading">Created assignments</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="dashboard-info__card">
+                        <div class="dashboard-info__card-box">
+                            <div class="dashboard-info__card-icon icon-color-03">
+                                <i class="edumi edumi-checklist"></i>
+                            </div>
+                            <div class="dashboard-info__card-content">
+                                <div class="dashboard-info__card-value">{{ number_format($studentSubmissionsCount) }}</div>
+                                <div class="dashboard-info__card-heading">Student submissions</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Total Students (admin only) --}}
                 @if($role === 'admin')
                 <div class="col-md-4 col-sm-6">

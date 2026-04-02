@@ -119,10 +119,6 @@ $img = $toUrl($raw) ?? asset(match($role){
 @endif
 
 
-                    <div class="dashboard-header__toggle">
-                        <button class="btn btn-toggle"><i class="fas fa-bars"></i></button>
-                    </div>
-
                 </div>
                 <!-- Dashboard Header Wrapper End -->
             </div>

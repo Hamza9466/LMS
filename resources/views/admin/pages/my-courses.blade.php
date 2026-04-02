@@ -257,10 +257,6 @@
                         <a class="btn btn-outline-primary" href="#"><i class="edumi edumi-content-writing"></i> <span class="text">Add A New Course </span></a>
                     </div>
 
-                    <div class="dashboard-header__toggle">
-                        <button class="btn btn-toggle"><i class="fas fa-bars"></i></button>
-                    </div>
-
                 </div>
                 <!-- Dashboard Header Wrapper End -->
             </div>

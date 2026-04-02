@@ -163,18 +163,6 @@
                             <button type="submit" class="btn btn-primary btn-hover-secondary w-100">Log In</button>
                         </div>
                     </form>
-
-
-                    <div class="modal-social-option">
-                        <p>or Log-in with</p>
-
-                        <ul class="modal-social-btn">
-                            <li><a href="#" class="btn facebook"><i class="fab fa-facebook-square"></i>
-                                    Gacebook</a>
-                            </li>
-                            <li><a href="#" class="btn google"><i class="fab fa-google"></i> Google</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
             <!-- Modal Content End -->

@@ -7,6 +7,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Models\PersonalDiscount;
 use App\Http\Controllers\Controller;
+use App\Support\PaymentMethods;
 
 class CartController extends Controller
 {
@@ -96,6 +97,7 @@ class CartController extends Controller
             'couponDiscount'        => $couponDiscount,
             'discount'              => $discount,
             'total'                 => $total,
+            'payMethods'            => PaymentMethods::merged(),
         ]);
     }
 

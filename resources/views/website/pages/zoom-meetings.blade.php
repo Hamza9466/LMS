@@ -29,7 +29,7 @@
         {{-- <div class="offcanvas offcanvas-end offcanvas-mobile" id="offcanvasMobileMenu" style="background-image: url(assets/images/mobile-bg.jpg);">
             <div class="offcanvas-header bg-white">
                 <div class="offcanvas-logo">
-                    <a class="offcanvas-logo__logo" href="#"><img src="assets/images/dark-logo.png" alt="Logo"></a>
+                    <a class="offcanvas-logo__logo" href="{{ route('home') }}"><img src="{{ asset('assets/website/images/dark-logo.png') }}" alt="Logo"></a>
                 </div>
                 <button type="button" class="offcanvas-close" data-bs-dismiss="offcanvas"><i class="fas fa-times"></i></button>
             </div>

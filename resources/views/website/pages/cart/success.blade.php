@@ -22,7 +22,18 @@
         </ul>
       </div>
       <div class="page-banner__caption text-center">
-        <h2 class="page-banner__main-title">Thank you! Enrollment confirmed. Now Login To Your Dashboard</h2>
+        @php $st = $order->status ?? 'paid'; @endphp
+        <h2 class="page-banner__main-title">
+          @if($st === 'paid')
+            Thank you! Your enrollment is confirmed.
+          @elseif($st === 'pending_verification')
+            Payment proof received — pending admin approval
+          @elseif($st === 'rejected')
+            This payment was not approved
+          @else
+            Order received
+          @endif
+        </h2>
       </div>
     </div>
   </div>
@@ -97,6 +108,20 @@
 
     @if (session('success'))
       <div class="alert alert-success mb-4">{{ session('success') }}</div>
+    @endif
+
+    @php $orderStatus = $order->status ?? ''; @endphp
+    @if($orderStatus === 'pending_verification')
+      <div class="alert alert-warning mb-4">
+        Your payment screenshot is being reviewed. You will <strong>not</strong> see these courses in <a href="{{ route('enrolled-courses') }}">My Courses</a> until an administrator approves the payment.
+      </div>
+    @elseif($orderStatus === 'rejected')
+      <div class="alert alert-danger mb-4">
+        This order was not approved. Please contact support or try again from the <a href="{{ route('cart.index') }}">cart</a>.
+        @if(!empty($order->admin_review_note))
+          <div class="mt-2 small"><strong>Note:</strong> {{ $order->admin_review_note }}</div>
+        @endif
+      </div>
     @endif
 
     <div class="row gy-6">
@@ -185,7 +210,17 @@
           <div class="card-body">
             <dl class="row mb-0">
               <dt class="col-5">Status</dt>
-              <dd class="col-7">{{ ucfirst($order->status ?? 'paid') }}</dd>
+              <dd class="col-7">
+                @php
+                  $lbl = match($order->status ?? '') {
+                    'pending_verification' => 'Pending verification',
+                    'rejected' => 'Rejected',
+                    'paid' => 'Paid / enrolled',
+                    default => ucfirst($order->status ?? '—'),
+                  };
+                @endphp
+                {{ $lbl }}
+              </dd>
 
               <dt class="col-5">Payment</dt>
               <dd class="col-7">{{ strtoupper($order->gateway ?? $order->payment_method ?? 'manual') }}</dd>
@@ -200,9 +235,19 @@
             </dl>
 
             <hr>
-            <p class="small text-muted mb-0">
-              You can access your new course(s) from <a href="{{ route('enrolled-courses') }}">My Courses</a> anytime.
-            </p>
+            @if(($order->status ?? '') === 'paid')
+              <p class="small text-muted mb-0">
+                Access your courses anytime from <a href="{{ route('enrolled-courses') }}">My Courses</a>.
+              </p>
+            @elseif(($order->status ?? '') === 'pending_verification')
+              <p class="small text-muted mb-0">
+                After approval, courses will appear under <a href="{{ route('enrolled-courses') }}">My Courses</a>.
+              </p>
+            @else
+              <p class="small text-muted mb-0">
+                <a href="{{ route('dashboard') }}">Dashboard</a> · <a href="{{ route('cart.index') }}">Cart</a>
+              </p>
+            @endif
           </div>
         </div>
       </div>

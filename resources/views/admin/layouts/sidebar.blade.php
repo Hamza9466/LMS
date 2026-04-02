@@ -57,6 +57,18 @@
                                 <span class="text">Transactions</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.payment-orders.index') }}">
+                                <i class="edumi edumi-wallet"></i>
+                                <span class="text">Payment proofs</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.payment-methods.edit') }}">
+                                <i class="fas fa-credit-card"></i>
+                                <span class="text">Payment methods</span>
+                            </a>
+                        </li>
                         @endif
                         @endauth
 
@@ -183,6 +195,22 @@
                             <a href="{{ route('admin.quizzes.index') }}">
                                 <i class="fas fa-chevron-right float-end small"></i><span class="text">Quizzes</span>
                             </a>
+                        </li>
+
+                        <li class="dashboard-nav-assignments {{ request()->routeIs('admin.assignments.*', 'teacher.assignments.*', 'teacher.students.monitor') ? 'active' : '' }}">
+                            <a class="collapsed dashboard-nav-assignments__toggle" data-bs-toggle="collapse" href="#adminAssignmentsMenu" role="button" aria-expanded="{{ request()->routeIs('admin.assignments.*', 'teacher.assignments.*', 'teacher.students.monitor') ? 'true' : 'false' }}">
+                                <i class="edumi edumi-content-writing"></i> <span class="text fw-semibold">Assignments</span>
+                                <i class="fas fa-chevron-down float-end small dashboard-nav-assignments__chev"></i>
+                            </a>
+                            <div class="collapse dashboard-nav-assignments__panel {{ request()->routeIs('admin.assignments.*', 'teacher.assignments.*', 'teacher.students.monitor') ? 'show' : '' }}" id="adminAssignmentsMenu">
+                                <ul class="dashboard-nav-assignments__sub list-unstyled mb-0">
+                                    <li class="{{ request()->routeIs('admin.assignments.manage') ? 'active' : '' }}"><a href="{{ route('admin.assignments.manage') }}">Manage all</a></li>
+                                    <li class="{{ request()->routeIs('admin.assignments.teacher-activity') ? 'active' : '' }}"><a href="{{ route('admin.assignments.teacher-activity') }}">Teacher activity</a></li>
+                                    <li class="{{ request()->routeIs('admin.assignments.performance') ? 'active' : '' }}"><a href="{{ route('admin.assignments.performance') }}">Performance &amp; progress</a></li>
+                                    <li class="{{ request()->routeIs('teacher.assignments.*') ? 'active' : '' }}"><a href="{{ route('teacher.assignments.index') }}">My assignments</a></li>
+                                    <li class="{{ request()->routeIs('teacher.students.monitor') ? 'active' : '' }}"><a href="{{ route('teacher.students.monitor') }}">Monitor students</a></li>
+                                </ul>
+                            </div>
                         </li>
 
                         {{-- reviews --}}
@@ -359,6 +387,18 @@
                                 <span class="text">Purchase History</span>
                             </a>
                         </li>
+                        <li class="{{ request()->routeIs('teacher.assignments.*') ? 'active' : '' }}">
+                            <a href="{{ route('teacher.assignments.index') }}">
+                                <i class="edumi edumi-content-writing"></i>
+                                <span class="text">Assignments</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('teacher.students.monitor') ? 'active' : '' }}">
+                            <a href="{{ route('teacher.students.monitor') }}">
+                                <i class="edumi edumi-open-book"></i>
+                                <span class="text">Monitor students</span>
+                            </a>
+                        </li>
                         {{-- courses assgn --}}
                         <li>
                             <a href="{{ route('courses.index') }}">
@@ -392,6 +432,12 @@
                         <li>
                             <a href="{{ route('enrolled-courses') }}"><i class="edumi edumi-open-book"></i><span
                                     class="text">Enrolled Courses</span></a>
+                        </li>
+                        <li class="{{ request()->routeIs('student.assignments.*') ? 'active' : '' }}">
+                            <a href="{{ route('student.assignments.index') }}">
+                                <i class="edumi edumi-content-writing"></i>
+                                <span class="text">Assignments</span>
+                            </a>
                         </li>
 
                         {{-- announcements --}}

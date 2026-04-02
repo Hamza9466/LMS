@@ -3779,6 +3779,76 @@ span.flatpickr-weekday {
 .dashboard-nav__menu-list li.active a i {
   color: #FFFFFF;
 }
+
+/* Admin — Assignments submenu (only active page highlighted) */
+.dashboard-nav__menu-list li.dashboard-nav-assignments {
+  border-radius: 5px;
+  margin: 6px 0;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments > a > i.edumi {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments > a > .dashboard-nav-assignments__chev {
+  position: absolute;
+  right: 18px;
+  left: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  float: none;
+  min-width: auto;
+  font-size: 11px;
+  color: #252525;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments.active > a {
+  background-color: transparent !important;
+  color: #252525 !important;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments.active > a > i.edumi {
+  color: #0071dc !important;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments .dashboard-nav-assignments__sub {
+  padding: 2px 0 8px;
+  margin: 0;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments .dashboard-nav-assignments__sub a {
+  display: flex;
+  align-items: center;
+  padding: 9px 14px 9px 20px !important;
+  margin: 0 10px 2px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #252525 !important;
+  background-color: transparent !important;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments .dashboard-nav-assignments__sub a::before {
+  content: "";
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-right: 12px;
+  border: 2px solid #0071dc;
+  border-radius: 50%;
+  background: transparent;
+  box-sizing: border-box;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments .dashboard-nav-assignments__sub a:hover {
+  background-color: #edf0f9 !important;
+  color: #252525 !important;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments .dashboard-nav-assignments__sub li.active a {
+  background-color: #0071dc !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+.dashboard-nav__menu-list li.dashboard-nav-assignments .dashboard-nav-assignments__sub li.active a::before {
+  border-color: rgba(255, 255, 255, 0.95);
+}
+
 .dashboard-nav__title {
   text-transform: uppercase;
   letter-spacing: 1px;

@@ -55,8 +55,13 @@
         // If it's a full URL already
         if (preg_match('#^https?://#i', $raw)) return $raw;
 
-        // Ensure path is under uploads/{role}s/...
-        if (!str_starts_with($raw, 'uploads/')) {
+        // If already under storage/... keep as-is.
+        if (str_starts_with($raw, 'storage/')) {
+            return asset($raw);
+        }
+
+        // Ensure path is under uploads/{role}s/... (for relative DB values)
+        if (!str_starts_with($raw, 'uploads/') && !str_starts_with($raw, 'storage/')) {
             $folder = $role === 'teacher' ? 'teachers' : ($role === 'student' ? 'students' : 'admins');
             // allow "students/xyz.jpg" etc
             if (preg_match('#^(students|teachers|admins)/#', $raw)) {
@@ -76,23 +81,32 @@
             return asset('storage/'.$raw);
         }
 
-        return null;
+        // Final fallback (same behavior as header avatar resolver)
+        return asset('storage/'.$raw);
     };
 
-    // Choose first available image field
-    $rawImage =
-        ($user->profile_photo_path ?? null)  // Jetstream style
+    // Prefer role-detail image first (especially admin_details.profile_image).
+    $detailImage = $profile->profile_image ?? $profile->avatar ?? $profile->photo ?? null;
+    $userImage =
+        ($user->profile_photo_path ?? null)
         ?: ($user->avatar ?? null)
-        ?: ($user->profile_image ?? null)
-        ?: ($profile->profile_image ?? null)
-        ?: ($profile->avatar ?? null)
-        ?: ($profile->photo ?? null);
+        ?: ($user->profile_image ?? null);
 
-    $profileImageUrl = $toUrl($rawImage, $role) ?? asset(match ($role) {
+    $profileImageUrl = $toUrl($detailImage, $role)
+        ?? $toUrl($userImage, $role)
+        ?? asset(match ($role) {
         'student' => 'assets/admin/images/avatar/student-default.png',
         'teacher' => 'assets/admin/images/avatar/teacher-default.png',
         default   => 'assets/admin/images/avatar/admin-default.png',
     });
+
+    // Force admin card image from admin_details when available.
+    if ($role === 'admin' && !empty($profile->profile_image)) {
+        $adminPath = ltrim(str_replace('\\', '/', $profile->profile_image), '/');
+        $profileImageUrl = str_starts_with($adminPath, 'storage/')
+            ? asset($adminPath)
+            : asset('storage/'.$adminPath);
+    }
 
     // Format DOB safely
     $fmtDob = function ($dob) {
@@ -104,7 +118,14 @@
 
 <div class="dashboard-content">
     <div class="container">
-        <h4 class="dashboard-title mb-3">My Profile</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="dashboard-title mb-0">My Profile</h4>
+            <a href="{{ route('admin.profile.edit') }}" class="btn btn-primary">Edit Profile</a>
+        </div>
+
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
         <!-- Top Card -->
         <div class="card mb-4">
@@ -127,7 +148,7 @@
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="small text-muted">Username</div>
-                        <div class="fw-semibold">{{ $safe($profile->username ?? $user->username) }}</div>
+                        <div class="fw-semibold">{{ $safe(($profile->username ?? null) ?: ($user->username ?? null) ?: (explode('@', $user->email)[0] ?? null)) }}</div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="small text-muted">Email</div>

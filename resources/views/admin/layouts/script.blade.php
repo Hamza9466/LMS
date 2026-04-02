@@ -9,7 +9,6 @@
     <script src="{{ asset('assets/admin/js/plugins/parallax.js') }}"></script>
     <script src="{{ asset('assets/admin/js/plugins/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/plugins/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/plugins/jquery.powertip.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/plugins/nice-select.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/plugins/glightbox.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/plugins/jquery.sticky-kit.min.js') }}"></script>

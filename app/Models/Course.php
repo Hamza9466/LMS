@@ -62,6 +62,11 @@ public function reviews()
     return $this->hasMany(CourseReview::class);
 }
 
+public function assignments()
+{
+    return $this->hasMany(Assignment::class);
+}
+
 /** Recalculate rating stats after review create/update/delete */
 public function recalculateRatings(): void
 {

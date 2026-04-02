@@ -814,27 +814,6 @@
 
 
     /*--
-        PowerTip
-    -----------------------------------*/
-    $('.course-item, .course-item-02').data('powertiptarget', 'course-hover');
-
-    $('.course-item, .course-item-02').powerTip({
-        placement: 'e',
-        mouseOnToPopup: true,
-        smartPlacement: true,
-    });
-
-
-    $('.course-list-item').data('powertiptarget', 'course-list-hover');
-
-    $('.course-list-item').powerTip({
-        placement: 'n',
-        mouseOnToPopup: true,
-        smartPlacement: true,
-    });
-
-
-    /*--
         Nice Select
     -----------------------------------*/
     // $('.select').niceSelect();

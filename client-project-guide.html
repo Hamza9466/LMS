@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Project Guide (Client Handover)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; color: #1f2937; }
+        .wrap { max-width: 1100px; margin: 0 auto; padding: 28px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 22px; margin-bottom: 18px; }
+        h1, h2, h3 { margin-top: 0; color: #0f172a; }
+        h1 { font-size: 30px; }
+        h2 { font-size: 22px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; }
+        h3 { font-size: 18px; margin-top: 18px; }
+        p, li { line-height: 1.6; }
+        ul { margin-top: 8px; }
+        .badge { display: inline-block; background: #e8f1ff; color: #0b5ed7; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: bold; }
+        .warn { background: #fff7ed; border-left: 4px solid #f97316; padding: 10px 12px; border-radius: 6px; }
+        .ok { background: #ecfdf5; border-left: 4px solid #10b981; padding: 10px 12px; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #e5e7eb; text-align: left; padding: 10px; vertical-align: top; }
+        th { background: #f9fafb; }
+        code { background: #f3f4f6; padding: 2px 6px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <h1>LMS Project Guide (Client Handover)</h1>
+            <p>This document explains how your Laravel LMS project works: modules, user roles, key functions, dashboards, assignments flow, and admin access details.</p>
+            <p><span class="badge">Project Type:</span> Laravel-based Learning Management System (LMS)</p>
+        </div>
+
+        <div class="card">
+            <h2>1) What This System Does</h2>
+            <ul>
+                <li>Public website for marketing pages (home, courses, blogs, FAQs, contact, about, zoom, membership).</li>
+                <li>User authentication (register/login/logout) and role-based dashboards.</li>
+                <li>Course purchase + enrollment + student learning journey (sections, lessons, quiz flow).</li>
+                <li>Teacher/admin assignment creation, grading, and student progress monitoring.</li>
+                <li>Admin controls for users, courses, reviews, quizzes, transactions, announcements, Q&amp;A, discussions, and assignment analytics.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>2) Login Credentials (Seeded Default)</h2>
+            <div class="ok">
+                <strong>Default Admin Login</strong><br>
+                Email: <code>admin@gmail.com</code><br>
+                Password: <code>123456</code>
+            </div>
+            <p>These are created by <code>database/seeders/AdminSeeder.php</code> and called from <code>database/seeders/DatabaseSeeder.php</code>.</p>
+            <div class="warn">
+                Security recommendation: change this password immediately in production.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3) Roles and Permissions</h2>
+            <table>
+                <thead>
+                    <tr><th>Role</th><th>Main Access</th><th>Assignment Access</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Admin</strong></td>
+                        <td>Full management of platform content and users</td>
+                        <td>Create/view/manage all assignments, see teacher activity, see full student performance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Teacher</strong></td>
+                        <td>Own course management and teaching operations</td>
+                        <td>Create assignments for assigned courses, grade submissions, monitor own students</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Student</strong></td>
+                        <td>Enrolled learning dashboard and course consumption</td>
+                        <td>View and submit assignments for enrolled courses</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>4) High-Level Architecture</h2>
+            <ul>
+                <li><strong>Routes:</strong> <code>routes/web.php</code> defines public, auth, admin, teacher, and student routes.</li>
+                <li><strong>Controllers:</strong> Business logic in <code>app/Http/Controllers/Admin</code> and <code>app/Http/Controllers/Website</code>.</li>
+                <li><strong>Models:</strong> Entities like <code>User</code>, <code>Course</code>, <code>Assignment</code>, <code>AssignmentSubmission</code>.</li>
+                <li><strong>Views:</strong> Blade templates in <code>resources/views</code>, including dashboard and assignment pages.</li>
+                <li><strong>Database:</strong> Core tables include users, courses, sections, lessons, quizzes, attempts, assignments, submissions, and pivot/enrollment tables.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>5) Key Functional Flow (End-to-End)</h2>
+            <h3>A. Public to Purchase</h3>
+            <ul>
+                <li>User browses courses/blog pages.</li>
+                <li>User registers/logs in.</li>
+                <li>User adds courses to cart and checks out.</li>
+                <li>System records order and enrollment.</li>
+            </ul>
+
+            <h3>B. Learning Flow</h3>
+            <ul>
+                <li>Student opens enrolled course.</li>
+                <li>Moves through sections and lessons.</li>
+                <li>Watch progress and quiz pass rules unlock progression.</li>
+                <li>Student can submit assignments where available.</li>
+            </ul>
+
+            <h3>C. Teaching/Admin Flow</h3>
+            <ul>
+                <li>Teacher/Admin creates assignments per course.</li>
+                <li>Students submit text/file responses.</li>
+                <li>Teacher/Admin reviews submissions and grades.</li>
+                <li>Admin monitors teacher activity and platform-wide student performance.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>6) Important Controllers and What Their Functions Do</h2>
+
+            <h3><code>DashboardController</code> (Admin Area)</h3>
+            <ul>
+                <li><code>index()</code>: builds dashboard metrics (enrollments, active/completed courses, totals, earnings).</li>
+                <li>Also includes assignment metrics for admin/teacher:
+                    <ul>
+                        <li>Assigned courses</li>
+                        <li>Created assignments</li>
+                        <li>Student submissions</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3><code>TeacherAssignmentController</code></h3>
+            <ul>
+                <li><code>__construct()</code>: allows only teacher/admin roles.</li>
+                <li><code>teacherCourseIds()</code>: resolves allowed course IDs for current user.</li>
+                <li><code>assertCourseAllowed()</code>/<code>assertAssignmentAllowed()</code>: authorization guards.</li>
+                <li><code>index()</code>: list assignments (teacher-owned or all for admin scope through this controller).</li>
+                <li><code>create()</code>: loads valid courses for assignment creation form.</li>
+                <li><code>store()</code>: validates and saves assignment.</li>
+                <li><code>show()</code>: assignment detail + enrolled students + submission status.</li>
+                <li><code>gradeSubmission()</code>: saves marks/feedback and graded timestamp.</li>
+                <li><code>monitor()</code>: per-course student lesson and quiz progress view.</li>
+            </ul>
+
+            <h3><code>StudentAssignmentController</code></h3>
+            <ul>
+                <li>Handles student assignment list, detail page, and submission action for enrolled courses.</li>
+            </ul>
+
+            <h3><code>AssignmentAdminController</code> (Admin-only Controls)</h3>
+            <ul>
+                <li><code>manage()</code>: paginated global list of all assignments with submission and graded counts.</li>
+                <li><code>teacherActivity()</code>: teacher-level workload metrics (courses, assignments, recent activity, pending grading).</li>
+                <li><code>performance()</code>: student progress matrix by course (lessons done, quizzes passed, average assignment marks).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>7) Assignment Module (Detailed)</h2>
+            <table>
+                <thead>
+                    <tr><th>Stage</th><th>System Behavior</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Create Assignment</td>
+                        <td>Teacher/Admin chooses course, title, description, deadline. Validation ensures valid course and permissions.</td>
+                    </tr>
+                    <tr>
+                        <td>Student Submission</td>
+                        <td>Student submits text/file for assignment. Submission timestamp is stored.</td>
+                    </tr>
+                    <tr>
+                        <td>Grading</td>
+                        <td>Teacher/Admin enters marks and feedback; system stores grade and graded timestamp.</td>
+                    </tr>
+                    <tr>
+                        <td>Admin Monitoring</td>
+                        <td>Admin can view all assignments, teacher output, and student progress/performance analytics.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>8) Admin Assignment Pages Added</h2>
+            <ul>
+                <li><code>/admin/assignments/manage</code> - Manage all assignments.</li>
+                <li><code>/admin/assignments/teacher-activity</code> - Monitor teacher activity.</li>
+                <li><code>/admin/assignments/performance</code> - View student results and progress.</li>
+            </ul>
+            <p>Sidebar includes an Assignments dropdown with these pages plus teacher workflow links.</p>
+        </div>
+
+        <div class="card">
+            <h2>9) Dashboard Cards Explained (Client Language)</h2>
+            <ul>
+                <li><strong>Enrolled Courses:</strong> Total purchased/enrolled course records.</li>
+                <li><strong>Active Courses:</strong> Enrolled but not fully completed.</li>
+                <li><strong>Completed Courses:</strong> Courses where lessons are completed according to platform rule.</li>
+                <li><strong>Assigned Courses:</strong> Courses currently tied to assignment operations.</li>
+                <li><strong>Created Assignments:</strong> Number of assignment records created.</li>
+                <li><strong>Student Submissions:</strong> Number of submitted assignment responses.</li>
+                <li><strong>Total Students/Courses/Earnings:</strong> Global admin business metrics.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>10) How to Explain to Your Client in 60 Seconds</h2>
+            <p>
+                “This LMS supports full online education operations: website, authentication, course purchases, student learning progress,
+                quizzes, assignments, grading, and admin analytics. Teachers manage their teaching work, students complete learning tasks,
+                and admin can monitor everything platform-wide including assignment performance and teacher activity.”
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>11) Notes</h2>
+            <ul>
+                <li>This guide covers all major business functions and operational flows used by admin/teacher/student.</li>
+                <li>The project contains many technical helper methods; those are implementation-level and not required for client operations.</li>
+                <li>If needed, a second document can be generated with endpoint-by-endpoint API/route mapping for developers.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
