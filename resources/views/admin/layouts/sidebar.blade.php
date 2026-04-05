@@ -123,7 +123,7 @@
                                 <span class="text">Purchase History</span>
                             </a>
                         </li>
-                        {{-- add blog category --}}
+                        {{-- Dashboard nav hidden (public blog menu hidden); admin URLs still work
                         <li>
                             <a class="collapsed" data-bs-toggle="collapse" href="#blogcategory">
                                 <i class="edumi edumi-books"></i> <span class="text">Blog Category</span>
@@ -138,7 +138,6 @@
                                 </ul>
                             </div>
                         </li>
-                        {{-- add blog --}}
                         <li>
                             <a class="collapsed" data-bs-toggle="collapse" href="#blogMenu">
                                 <i class="edumi edumi-books"></i> <span class="text">Blog</span>
@@ -152,6 +151,7 @@
                                 </ul>
                             </div>
                         </li>
+                        --}}
 
 
 
@@ -220,7 +220,7 @@
                                 <span class="text">Reviews</span>
                             </a>
                         </li>
-                        {{-- zoom meeting --}}
+                        {{-- Dashboard nav hidden (public Zoom hidden); zoom-meetings.* routes still work
                         <li>
                             <a class="collapsed" data-bs-toggle="collapse" href="#zoom">
                                 <i class="edumi edumi-books"></i> <span class="text">Zoom Meetings</span>
@@ -233,6 +233,7 @@
                                 </ul>
                             </div>
                         </li>
+                        --}}
                         {{-- {{ About_Banner }} --}}
                         <li>
                             <a class="collapsed" data-bs-toggle="collapse" href="#adminAboutBanners">
@@ -301,7 +302,7 @@
                                 <span class="text">All Contacts</span>
                             </a>
                         </li>
-                        {{-- faq student question --}}
+                        {{-- Dashboard nav hidden (public FAQs hidden); admin.faq-students.* / faq-teachers.* still work
                         <li>
                             <a class="collapsed" data-bs-toggle="collapse" href="#faqstudent">
                                 <i class="fas fa-file-alt"></i> <span class="text">Faq Student Q.</span>
@@ -314,7 +315,6 @@
                                 </ul>
                             </div>
                         </li>
-                        {{-- Faq Teacher --}}
                         <li>
                             <a class="collapsed" data-bs-toggle="collapse" href="#faqteacherMenu">
                                 <i class="fas fa-question-circle"></i> <span class="text">Faq Teacher Q.</span>
@@ -327,6 +327,7 @@
                                 </ul>
                             </div>
                         </li>
+                        --}}
                         <!-- Sections -->
                         <li>
                             <a href="{{ route('sections.index') }}">

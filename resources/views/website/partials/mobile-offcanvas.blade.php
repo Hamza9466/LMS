@@ -20,19 +20,21 @@
                     <a href="{{ route('CourseCategory') }}" class="{{ request()->routeIs('CourseCategory') ? 'active' : '' }}"><span>Categories</span></a>
                 </li>
                 <li>
-                    <a href="#" class="{{ request()->routeIs('course_hub', 'Blog', 'BlogDetail', 'about', 'Contact', 'faqs', 'membership') ? 'active' : '' }}"><span>Pages</span></a>
+                    <a href="#" class="{{ request()->routeIs('course_hub', 'about', 'Contact') ? 'active' : '' }}"><span>Pages</span></a>
                     <ul class="sub-menu">
                         <li><a href="{{ route('course_hub') }}" class="{{ request()->routeIs('course_hub') ? 'active' : '' }}"><span>Course Hub</span></a></li>
-                        <li><a href="{{ route('Blog') }}" class="{{ request()->routeIs('Blog') || request()->routeIs('BlogDetail') ? 'active' : '' }}"><span>Blog</span></a></li>
+                        {{-- Nav hidden; routes still work: /blog, /faqs, /membership_plans --}}
+                        {{-- <li><a href="{{ route('Blog') }}" class="{{ request()->routeIs('Blog') || request()->routeIs('BlogDetail') ? 'active' : '' }}"><span>Blog</span></a></li> --}}
                         <li><a href="{{ route('about') }}"><span>About us</span></a></li>
                         <li><a href="{{ route('Contact') }}"><span>Contact us</span></a></li>
-                        <li><a href="{{ route('faqs') }}"><span>FAQs</span></a></li>
-                        <li><a href="{{ route('membership') }}"><span>Membership plans</span></a></li>
+                        {{-- <li><a href="{{ route('faqs') }}"><span>FAQs</span></a></li> --}}
+                        {{-- <li><a href="{{ route('membership') }}"><span>Membership plans</span></a></li> --}}
                     </ul>
                 </li>
-                <li>
+                {{-- Nav hidden; /zoom still works --}}
+                {{-- <li>
                     <a href="{{ route('Zoom') }}" class="{{ request()->routeIs('Zoom') ? 'active' : '' }}"><span>Zoom Meetings</span></a>
-                </li>
+                </li> --}}
                 <li>
                     <a href="{{ route('cart.index') }}"><span>Cart</span></a>
                 </li>

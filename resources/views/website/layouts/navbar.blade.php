@@ -152,15 +152,17 @@
                                             </ul> --}}
                                         </li>
                                         <li>
-                                            <a href="#" class="{{ request()->routeIs('course_hub', 'Blog', 'BlogDetail', 'about', 'Contact', 'faqs') ? 'active' : '' }}"><span>Pages</span></a>
+                                            <a href="#" class="{{ request()->routeIs('course_hub', 'about', 'Contact') ? 'active' : '' }}"><span>Pages</span></a>
                                             <ul class="sub-menu">
                                                 <li><a class="{{ request()->routeIs('course_hub') ? 'active' : '' }}" href="{{ route('course_hub') }}"><span>Course Hub</span></a></li>
-                                                <li><a class="{{ request()->routeIs('Blog', 'BlogDetail') ? 'active' : '' }}" href="{{ route('Blog') }}"><span>Blog</span></a></li>
+                                                {{-- Nav hidden; pages still live: /blog --}}
+                                                {{-- <li><a class="{{ request()->routeIs('Blog', 'BlogDetail') ? 'active' : '' }}" href="{{ route('Blog') }}"><span>Blog</span></a></li> --}}
                                                 <li><a class="{{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}"><span>About us</span></a></li>
 
                                                 <li><a class="{{ request()->routeIs('Contact') ? 'active' : '' }}" href="{{ route('Contact') }}"><span>Contact us</span></a></li>
 
-                                                <li><a class="{{ request()->routeIs('faqs') ? 'active' : '' }}" href="{{ route('faqs') }}"><span>FAQs</span></a></li>
+                                                {{-- Nav hidden; pages still live: /faqs --}}
+                                                {{-- <li><a class="{{ request()->routeIs('faqs') ? 'active' : '' }}" href="{{ route('faqs') }}"><span>FAQs</span></a></li> --}}
 
                                                 {{-- <li>
                                                     <a href="#"><span>Dashboard</span></a>
@@ -178,10 +180,10 @@
                                                 </li> --}}
                                             </ul>
                                         </li>
-                                        <li>
+                                        {{-- Nav hidden; /zoom still works --}}
+                                        {{-- <li>
                                             <a href="{{ route('Zoom') }}"><span>Zoom Meetings</span></a>
-
-                                        </li>
+                                        </li> --}}
 
 
 

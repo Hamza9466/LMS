@@ -201,7 +201,7 @@
                     <li><a href="#">Home</a></li>
                     <li><a href="#">Courses</a></li>
                     <li><a href="#">Events</a></li>
-                    <li><a href="#">Blog</a></li>
+                    {{-- <li><a href="#">Blog</a></li> --}}
                     <li><a href="#">Contact</a></li>
                 </ul>
                 <div class="dashboard-menu__search">

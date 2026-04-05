@@ -17,214 +17,359 @@
         .badge { display: inline-block; background: #e8f1ff; color: #0b5ed7; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: bold; }
         .warn { background: #fff7ed; border-left: 4px solid #f97316; padding: 10px 12px; border-radius: 6px; }
         .ok { background: #ecfdf5; border-left: 4px solid #10b981; padding: 10px 12px; border-radius: 6px; }
+        .cmd { background: #1e293b; color: #e2e8f0; padding: 14px 16px; border-radius: 8px; font-family: Consolas, Monaco, monospace; font-size: 14px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 10px 0; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #e5e7eb; text-align: left; padding: 10px; vertical-align: top; }
         th { background: #f9fafb; }
         code { background: #f3f4f6; padding: 2px 6px; border-radius: 5px; }
+        .step { font-weight: bold; color: #0b5ed7; }
+        ol.setup > li { margin-bottom: 14px; }
     </style>
 </head>
 <body>
     <div class="wrap">
         <div class="card">
             <h1>LMS Project Guide (Client Handover)</h1>
-            <p>This document explains how your Laravel LMS project works: modules, user roles, key functions, dashboards, assignments flow, and admin access details.</p>
-            <p><span class="badge">Project Type:</span> Laravel-based Learning Management System (LMS)</p>
+            <p>This document is written for <strong>non-developers</strong> as well as technical staff. It explains <strong>how to install and run the project</strong> (with exact commands), <strong>how the system works</strong>, and <strong>what you can do</strong> in the admin, teacher, and student areas.</p>
+            <p><span class="badge">Project Type:</span> Laravel 10 Learning Management System (LMS) — PHP + MySQL (or compatible database)</p>
         </div>
 
         <div class="card">
-            <h2>1) What This System Does</h2>
+            <h2>Part A — What You Must Install First (One Time)</h2>
+            <p>Think of these as the “engines” that run the project on your computer or server.</p>
+            <table>
+                <thead>
+                    <tr><th>Software</th><th>Why you need it</th><th>Where to get it</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>PHP</strong> (8.1 or newer)</td>
+                        <td>Laravel runs on PHP.</td>
+                        <td><a href="https://windows.php.net/download/" target="_blank" rel="noopener">windows.php.net</a> or use <strong>XAMPP</strong> / <strong>Laragon</strong> (includes PHP + MySQL).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Composer</strong></td>
+                        <td>Downloads PHP libraries for the project.</td>
+                        <td><a href="https://getcomposer.org/download/" target="_blank" rel="noopener">getcomposer.org</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MySQL</strong> (or MariaDB)</td>
+                        <td>Database where users, courses, orders, etc. are stored.</td>
+                        <td>Included in XAMPP/Laragon, or install MySQL Server separately.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Node.js</strong> (optional for local dev)</td>
+                        <td>Only needed if you change front-end assets with Vite (<code>npm run dev</code>).</td>
+                        <td><a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> (LTS version).</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="warn">
+                <strong>Tip:</strong> On Windows, <strong>Laragon</strong> or <strong>XAMPP</strong> is often easiest: you get PHP, MySQL, and phpMyAdmin in one package. After installing, add PHP and Composer to your system PATH so commands work in PowerShell or Command Prompt.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Part B — First-Time Project Setup (Step by Step + Commands)</h2>
+            <p><span class="step">Important:</span> Run all commands from the <strong>project root folder</strong> (the folder that contains <code>artisan</code>, <code>composer.json</code>, and <code>.env.example</code>). In this guide we use <code>D:\laraval\LMS</code> as an example — <strong>change it to your actual folder path</strong>.</p>
+
+            <h3>B1. Open a terminal in the project folder</h3>
             <ul>
-                <li>Public website for marketing pages (home, courses, blogs, FAQs, contact, about, zoom, membership).</li>
-                <li>User authentication (register/login/logout) and role-based dashboards.</li>
-                <li>Course purchase + enrollment + student learning journey (sections, lessons, quiz flow).</li>
-                <li>Teacher/admin assignment creation, grading, and student progress monitoring.</li>
-                <li>Admin controls for users, courses, reviews, quizzes, transactions, announcements, Q&amp;A, discussions, and assignment analytics.</li>
+                <li><strong>Windows:</strong> Open PowerShell → <code>cd D:\laraval\LMS</code></li>
+                <li><strong>Mac/Linux:</strong> Open Terminal → <code>cd /path/to/LMS</code></li>
+            </ul>
+
+            <h3>B2. Install PHP dependencies (Composer)</h3>
+            <p>This downloads Laravel and all required packages. Run once after cloning or copying the project.</p>
+            <div class="cmd">composer install</div>
+            <p>If Composer is not recognized, install it from getcomposer.org and try again.</p>
+
+            <h3>B3. Create your environment file (<code>.env</code>)</h3>
+            <p>Laravel reads database and app settings from <code>.env</code>. If you do not have <code>.env</code> yet, copy the example file:</p>
+            <p><strong>Windows (PowerShell):</strong></p>
+            <div class="cmd">Copy-Item .env.example .env</div>
+            <p><strong>Mac/Linux:</strong></p>
+            <div class="cmd">cp .env.example .env</div>
+
+            <h3>B4. Generate application key</h3>
+            <p>Required for encryption and sessions.</p>
+            <div class="cmd">php artisan key:generate</div>
+
+            <h3>B5. Create an empty database in MySQL</h3>
+            <p>Using phpMyAdmin, MySQL Workbench, or command line, create a database, for example named <code>lms_db</code>. Note the <strong>database name</strong>, <strong>username</strong>, and <strong>password</strong>.</p>
+
+            <h3>B6. Edit <code>.env</code> — connect the database</h3>
+            <p>Open <code>.env</code> in a text editor and set at least these lines (use your real values):</p>
+            <div class="cmd">APP_NAME=LMS
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=lms_db
+DB_USERNAME=root
+DB_PASSWORD=</div>
+            <p>Leave <code>DB_PASSWORD</code> empty if your MySQL user has no password (common on local XAMPP).</p>
+
+            <h3>B7. Run database migrations</h3>
+            <p>This creates all tables (users, courses, orders, assignments, etc.).</p>
+            <div class="cmd">php artisan migrate</div>
+            <p>If you see “Nothing to migrate”, tables may already exist — that is OK.</p>
+
+            <h3>B8. Seed default admin user (optional but recommended)</h3>
+            <p>Creates the default admin account (see login section below).</p>
+            <div class="cmd">php artisan db:seed</div>
+
+            <h3>B9. Link storage for uploaded files (images, payment proofs)</h3>
+            <p>Makes files in <code>storage/app/public</code> visible on the website.</p>
+            <div class="cmd">php artisan storage:link</div>
+
+            <h3>B10. Clear config cache (after changing <code>.env</code>)</h3>
+            <div class="cmd">php artisan config:clear
+php artisan cache:clear</div>
+
+            <h3>B11. Start the local web server</h3>
+            <div class="cmd">php artisan serve</div>
+            <p>Then open a browser and go to: <strong>http://127.0.0.1:8000</strong></p>
+            <div class="ok">
+                <strong>Admin dashboard URL (after login as admin):</strong> typically <code>http://127.0.0.1:8000/admin/dashboard</code> (exact path depends on your routes; use “Dashboard” after logging in).
+            </div>
+
+            <h3>B12. (Optional) Front-end build with Node</h3>
+            <p>Only if you modify JavaScript/CSS through Vite:</p>
+            <div class="cmd">npm install
+npm run build</div>
+            <p>For live reloading while developing: <code>npm run dev</code> (run in a second terminal).</p>
+        </div>
+
+        <div class="card">
+            <h2>Part C — Command Cheat Sheet</h2>
+            <table>
+                <thead>
+                    <tr><th>What you want</th><th>Command</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Install PHP packages</td><td><code>composer install</code></td></tr>
+                    <tr><td>Apply database structure</td><td><code>php artisan migrate</code></td></tr>
+                    <tr><td>Reset database (⚠ deletes data)</td><td><code>php artisan migrate:fresh</code> then <code>php artisan db:seed</code></td></tr>
+                    <tr><td>Create admin user again</td><td><code>php artisan db:seed</code></td></tr>
+                    <tr><td>Public storage link</td><td><code>php artisan storage:link</code></td></tr>
+                    <tr><td>Reload config after editing .env</td><td><code>php artisan config:clear</code></td></tr>
+                    <tr><td>Run website locally</td><td><code>php artisan serve</code></td></tr>
+                    <tr><td>List all routes (advanced)</td><td><code>php artisan route:list</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Part D — How the Project Works (Simple Overview)</h2>
+            <ul>
+                <li><strong>Public website</strong> — Visitors see home, course catalog, course details, cart, checkout, login/register. Some menu items may be hidden in the header but pages can still exist if you open the URL directly.</li>
+                <li><strong>Checkout &amp; payments</strong> — Students pay (e.g. upload payment proof). Admins review orders under <strong>Payment proofs</strong> and can set <strong>Payment methods</strong> (account numbers and instructions) from the admin panel.</li>
+                <li><strong>After purchase</strong> — The student is enrolled in courses and can open lessons, quizzes, and assignments from the student dashboard.</li>
+                <li><strong>Teachers</strong> — Manage their courses (as configured), assignments, and monitor students linked to their teaching.</li>
+                <li><strong>Admins</strong> — Manage users, courses, categories, content, transactions, reviews, announcements, Q&amp;A, discussions, assignments analytics, and more from the sidebar.</li>
+            </ul>
+            <p><strong>Technical folders (for your developer):</strong></p>
+            <ul>
+                <li><code>routes/web.php</code> — URL routes.</li>
+                <li><code>app/Http/Controllers</code> — Logic for pages and actions.</li>
+                <li><code>resources/views</code> — HTML templates (Blade).</li>
+                <li><code>database/migrations</code> — Database table definitions.</li>
+                <li><code>config/payment.php</code> — Default payment method labels/numbers (admin can override in <strong>Payment methods</strong>).</li>
             </ul>
         </div>
 
         <div class="card">
-            <h2>2) Login Credentials (Seeded Default)</h2>
+            <h2>Part E — What You Can Do in This System (By Role)</h2>
+
+            <h3>As Admin (after login)</h3>
+            <ul>
+                <li><strong>Dashboard</strong> — See totals: students, courses, earnings, enrollments, assignment activity.</li>
+                <li><strong>Users</strong> — Add teachers/students, approve or reject accounts if your workflow uses that.</li>
+                <li><strong>Course categories &amp; courses</strong> — Create and publish courses, set prices, assign teachers.</li>
+                <li><strong>Payment proofs</strong> — Approve or reject manual payment uploads; filter by status and gateway.</li>
+                <li><strong>Payment methods</strong> — Edit display names, account numbers, and instructions shown at checkout.</li>
+                <li><strong>Transactions</strong> — View payment records.</li>
+                <li><strong>Assignments (menu)</strong> — Manage all assignments, teacher activity, student performance.</li>
+                <li><strong>Quizzes, reviews, announcements, Q&amp;A, discussions</strong> — Moderation and content as needed.</li>
+                <li><strong>Profile</strong> — Update admin profile.</li>
+            </ul>
+            <div class="warn">Some sidebar sections (e.g. blog, zoom, FAQ management) may be commented out in code for your build—your developer can turn them back on if you need them visible.</div>
+
+            <h3>As Teacher</h3>
+            <ul>
+                <li>View dashboard metrics relevant to teaching and assignments.</li>
+                <li>Create and grade assignments for courses you are allowed to manage.</li>
+                <li>Monitor students’ progress for your courses (where enabled).</li>
+                <li>Use Q&amp;A, discussions, announcements as configured.</li>
+            </ul>
+
+            <h3>As Student</h3>
+            <ul>
+                <li>Browse and purchase courses (or enroll in free courses).</li>
+                <li>Open <strong>Enrolled Courses</strong>, complete lessons and quizzes in order where the platform enforces progression.</li>
+                <li>Submit assignments and view feedback/grades.</li>
+                <li>See announcements and notifications.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Part F — Default Admin Login (After Seeding)</h2>
             <div class="ok">
                 <strong>Default Admin Login</strong><br>
                 Email: <code>admin@gmail.com</code><br>
                 Password: <code>123456</code>
             </div>
-            <p>These are created by <code>database/seeders/AdminSeeder.php</code> and called from <code>database/seeders/DatabaseSeeder.php</code>.</p>
+            <p>Created by <code>database/seeders/AdminSeeder.php</code> when you run <code>php artisan db:seed</code>.</p>
             <div class="warn">
-                Security recommendation: change this password immediately in production.
+                <strong>Security:</strong> Change this password before going live on the internet. Use a strong password and keep <code>.env</code> secret (never upload it to public hosting galleries or email it openly).
             </div>
         </div>
 
         <div class="card">
-            <h2>3) Roles and Permissions</h2>
+            <h2>Part G — Roles and Permissions (Summary)</h2>
             <table>
                 <thead>
-                    <tr><th>Role</th><th>Main Access</th><th>Assignment Access</th></tr>
+                    <tr><th>Role</th><th>Main access</th><th>Assignments</th></tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>Admin</strong></td>
-                        <td>Full management of platform content and users</td>
-                        <td>Create/view/manage all assignments, see teacher activity, see full student performance</td>
+                        <td>Full platform management</td>
+                        <td>All assignments, teacher activity, student performance</td>
                     </tr>
                     <tr>
                         <td><strong>Teacher</strong></td>
-                        <td>Own course management and teaching operations</td>
-                        <td>Create assignments for assigned courses, grade submissions, monitor own students</td>
+                        <td>Own courses and teaching tools</td>
+                        <td>Create/grade for allowed courses; monitor own students</td>
                     </tr>
                     <tr>
                         <td><strong>Student</strong></td>
-                        <td>Enrolled learning dashboard and course consumption</td>
-                        <td>View and submit assignments for enrolled courses</td>
+                        <td>Learning dashboard</td>
+                        <td>Submit work; view grades</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="card">
-            <h2>4) High-Level Architecture</h2>
+            <h2>Part H — Key User Journeys</h2>
+            <h3>H1. From visitor to enrolled student</h3>
+            <ol>
+                <li>Browse courses on the public site → open a course → add to cart.</li>
+                <li>Register or log in.</li>
+                <li>Checkout: choose payment method, upload proof if required, submit.</li>
+                <li>Admin approves payment (if pending verification) → student becomes enrolled.</li>
+                <li>Student opens <strong>Enrolled Courses</strong> and starts lessons.</li>
+            </ol>
+
+            <h3>H2. Assignments</h3>
+            <ol>
+                <li>Teacher or admin creates an assignment for a course (title, description, deadline).</li>
+                <li>Student submits text or files.</li>
+                <li>Teacher or admin grades and adds feedback.</li>
+                <li>Admin can use assignment reports to see workload and results.</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h2>Part I — Important Admin URLs (Reference)</h2>
             <ul>
-                <li><strong>Routes:</strong> <code>routes/web.php</code> defines public, auth, admin, teacher, and student routes.</li>
-                <li><strong>Controllers:</strong> Business logic in <code>app/Http/Controllers/Admin</code> and <code>app/Http/Controllers/Website</code>.</li>
-                <li><strong>Models:</strong> Entities like <code>User</code>, <code>Course</code>, <code>Assignment</code>, <code>AssignmentSubmission</code>.</li>
-                <li><strong>Views:</strong> Blade templates in <code>resources/views</code>, including dashboard and assignment pages.</li>
-                <li><strong>Database:</strong> Core tables include users, courses, sections, lessons, quizzes, attempts, assignments, submissions, and pivot/enrollment tables.</li>
+                <li><code>/admin/assignments/manage</code> — All assignments.</li>
+                <li><code>/admin/assignments/teacher-activity</code> — Teacher workload.</li>
+                <li><code>/admin/assignments/performance</code> — Student progress and marks.</li>
+                <li><code>/admin/payment-orders</code> — Payment proof queue (pending / approved / rejected).</li>
+                <li><code>/admin/payment-methods</code> — Edit checkout payment text and account numbers.</li>
+            </ul>
+            <p>Your site base URL is added in front (e.g. <code>http://127.0.0.1:8000/admin/payment-orders</code>).</p>
+        </div>
+
+        <div class="card">
+            <h2>Part J — Dashboard Numbers (Plain Language)</h2>
+            <ul>
+                <li><strong>Enrolled courses</strong> — How many course enrollments exist.</li>
+                <li><strong>Active / completed courses</strong> — Progress-based totals.</li>
+                <li><strong>Assignments / submissions</strong> — Work created and handed in.</li>
+                <li><strong>Earnings</strong> — Sum from paid orders (admin view).</li>
             </ul>
         </div>
 
         <div class="card">
-            <h2>5) Key Functional Flow (End-to-End)</h2>
-            <h3>A. Public to Purchase</h3>
+            <h2>Part K — Technical Reference (For Developers)</h2>
+            <h3>DashboardController</h3>
             <ul>
-                <li>User browses courses/blog pages.</li>
-                <li>User registers/logs in.</li>
-                <li>User adds courses to cart and checks out.</li>
-                <li>System records order and enrollment.</li>
+                <li>Builds admin dashboard metrics: enrollments, courses, earnings, plus assignment-related counts where applicable.</li>
             </ul>
-
-            <h3>B. Learning Flow</h3>
+            <h3>TeacherAssignmentController</h3>
             <ul>
-                <li>Student opens enrolled course.</li>
-                <li>Moves through sections and lessons.</li>
-                <li>Watch progress and quiz pass rules unlock progression.</li>
-                <li>Student can submit assignments where available.</li>
+                <li>Lists/creates assignments, shows detail, grades submissions, monitors student progress for allowed courses.</li>
             </ul>
-
-            <h3>C. Teaching/Admin Flow</h3>
+            <h3>StudentAssignmentController</h3>
             <ul>
-                <li>Teacher/Admin creates assignments per course.</li>
-                <li>Students submit text/file responses.</li>
-                <li>Teacher/Admin reviews submissions and grades.</li>
-                <li>Admin monitors teacher activity and platform-wide student performance.</li>
+                <li>Student list, detail, and submit actions for enrolled courses.</li>
+            </ul>
+            <h3>AssignmentAdminController</h3>
+            <ul>
+                <li>Admin-only: global assignment list, teacher activity, student performance matrix.</li>
             </ul>
         </div>
 
         <div class="card">
-            <h2>6) Important Controllers and What Their Functions Do</h2>
-
-            <h3><code>DashboardController</code> (Admin Area)</h3>
-            <ul>
-                <li><code>index()</code>: builds dashboard metrics (enrollments, active/completed courses, totals, earnings).</li>
-                <li>Also includes assignment metrics for admin/teacher:
-                    <ul>
-                        <li>Assigned courses</li>
-                        <li>Created assignments</li>
-                        <li>Student submissions</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3><code>TeacherAssignmentController</code></h3>
-            <ul>
-                <li><code>__construct()</code>: allows only teacher/admin roles.</li>
-                <li><code>teacherCourseIds()</code>: resolves allowed course IDs for current user.</li>
-                <li><code>assertCourseAllowed()</code>/<code>assertAssignmentAllowed()</code>: authorization guards.</li>
-                <li><code>index()</code>: list assignments (teacher-owned or all for admin scope through this controller).</li>
-                <li><code>create()</code>: loads valid courses for assignment creation form.</li>
-                <li><code>store()</code>: validates and saves assignment.</li>
-                <li><code>show()</code>: assignment detail + enrolled students + submission status.</li>
-                <li><code>gradeSubmission()</code>: saves marks/feedback and graded timestamp.</li>
-                <li><code>monitor()</code>: per-course student lesson and quiz progress view.</li>
-            </ul>
-
-            <h3><code>StudentAssignmentController</code></h3>
-            <ul>
-                <li>Handles student assignment list, detail page, and submission action for enrolled courses.</li>
-            </ul>
-
-            <h3><code>AssignmentAdminController</code> (Admin-only Controls)</h3>
-            <ul>
-                <li><code>manage()</code>: paginated global list of all assignments with submission and graded counts.</li>
-                <li><code>teacherActivity()</code>: teacher-level workload metrics (courses, assignments, recent activity, pending grading).</li>
-                <li><code>performance()</code>: student progress matrix by course (lessons done, quizzes passed, average assignment marks).</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>7) Assignment Module (Detailed)</h2>
+            <h2>Part L — Troubleshooting</h2>
             <table>
                 <thead>
-                    <tr><th>Stage</th><th>System Behavior</th></tr>
+                    <tr><th>Problem</th><th>What to try</th></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Create Assignment</td>
-                        <td>Teacher/Admin chooses course, title, description, deadline. Validation ensures valid course and permissions.</td>
+                        <td><code>SQLSTATE</code> / database connection error</td>
+                        <td>Check MySQL is running; verify <code>DB_*</code> in <code>.env</code>; run <code>php artisan config:clear</code>.</td>
                     </tr>
                     <tr>
-                        <td>Student Submission</td>
-                        <td>Student submits text/file for assignment. Submission timestamp is stored.</td>
+                        <td>500 error / white page</td>
+                        <td>Run <code>php artisan key:generate</code>; set <code>APP_DEBUG=true</code> locally to see details (turn off in production).</td>
                     </tr>
                     <tr>
-                        <td>Grading</td>
-                        <td>Teacher/Admin enters marks and feedback; system stores grade and graded timestamp.</td>
+                        <td>Images or uploads not showing</td>
+                        <td>Run <code>php artisan storage:link</code>; check folder permissions on <code>storage</code> and <code>bootstrap/cache</code>.</td>
                     </tr>
                     <tr>
-                        <td>Admin Monitoring</td>
-                        <td>Admin can view all assignments, teacher output, and student progress/performance analytics.</td>
+                        <td><code>composer</code> or <code>php</code> not found</td>
+                        <td>Install PHP and Composer; add them to your system PATH; restart the terminal.</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="card">
-            <h2>8) Admin Assignment Pages Added</h2>
+            <h2>Part M — Production (Going Live) Checklist</h2>
             <ul>
-                <li><code>/admin/assignments/manage</code> - Manage all assignments.</li>
-                <li><code>/admin/assignments/teacher-activity</code> - Monitor teacher activity.</li>
-                <li><code>/admin/assignments/performance</code> - View student results and progress.</li>
-            </ul>
-            <p>Sidebar includes an Assignments dropdown with these pages plus teacher workflow links.</p>
-        </div>
-
-        <div class="card">
-            <h2>9) Dashboard Cards Explained (Client Language)</h2>
-            <ul>
-                <li><strong>Enrolled Courses:</strong> Total purchased/enrolled course records.</li>
-                <li><strong>Active Courses:</strong> Enrolled but not fully completed.</li>
-                <li><strong>Completed Courses:</strong> Courses where lessons are completed according to platform rule.</li>
-                <li><strong>Assigned Courses:</strong> Courses currently tied to assignment operations.</li>
-                <li><strong>Created Assignments:</strong> Number of assignment records created.</li>
-                <li><strong>Student Submissions:</strong> Number of submitted assignment responses.</li>
-                <li><strong>Total Students/Courses/Earnings:</strong> Global admin business metrics.</li>
+                <li>Set <code>APP_ENV=production</code> and <code>APP_DEBUG=false</code> in <code>.env</code>.</li>
+                <li>Use a strong <code>APP_KEY</code> (already set by <code>key:generate</code>).</li>
+                <li>Use real database credentials and HTTPS URL in <code>APP_URL</code>.</li>
+                <li>Run <code>composer install --no-dev --optimize-autoloader</code> on the server.</li>
+                <li>Run <code>php artisan migrate --force</code> (after backup).</li>
+                <li>Run <code>php artisan config:cache</code> and <code>php artisan route:cache</code> when your developer recommends it.</li>
+                <li>Change the default admin password.</li>
             </ul>
         </div>
 
         <div class="card">
-            <h2>10) How to Explain to Your Client in 60 Seconds</h2>
+            <h2>Part N — 60-Second Summary for Stakeholders</h2>
             <p>
-                “This LMS supports full online education operations: website, authentication, course purchases, student learning progress,
-                quizzes, assignments, grading, and admin analytics. Teachers manage their teaching work, students complete learning tasks,
-                and admin can monitor everything platform-wide including assignment performance and teacher activity.”
+                “This LMS runs a public website for courses and checkout, with student dashboards for learning, quizzes, and assignments.
+                Teachers and admins create work, grade it, and track progress. Admins manage users, payments, course catalog, and platform-wide
+                reports—including assignments and payment verification.”
             </p>
         </div>
 
         <div class="card">
-            <h2>11) Notes</h2>
+            <h2>Part O — Notes</h2>
             <ul>
-                <li>This guide covers all major business functions and operational flows used by admin/teacher/student.</li>
-                <li>The project contains many technical helper methods; those are implementation-level and not required for client operations.</li>
-                <li>If needed, a second document can be generated with endpoint-by-endpoint API/route mapping for developers.</li>
+                <li>Commands assume you are in the project root directory.</li>
+                <li>Windows examples use PowerShell; Mac/Linux use the same <code>php artisan</code> and <code>composer</code> commands in Terminal.</li>
+                <li>For route-by-route API documentation, ask your developer for <code>php artisan route:list</code> output or a separate technical spec.</li>
             </ul>
         </div>
     </div>

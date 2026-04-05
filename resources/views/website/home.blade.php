@@ -132,17 +132,19 @@
                                         <li><a class="{{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}"><span>Home</span></a></li>
                                         <li><a class="{{ request()->routeIs('CourseGrid') || request()->routeIs('CourseDetail') ? 'active' : '' }}" href="{{ route('CourseGrid') }}"><span>Courses</span></a></li>
                                         <li>
-                                            <a href="#" class="{{ request()->routeIs('course_hub', 'Blog', 'BlogDetail', 'about', 'Contact', 'faqs', 'membership') ? 'active' : '' }}"><span>Pages</span></a>
+                                            <a href="#" class="{{ request()->routeIs('course_hub', 'about', 'Contact') ? 'active' : '' }}"><span>Pages</span></a>
                                             <ul class="sub-menu">
                                                 <li><a class="{{ request()->routeIs('course_hub') ? 'active' : '' }}" href="{{ route('course_hub') }}"><span>Course Hub</span></a></li>
-                                                <li><a class="{{ request()->routeIs('Blog') || request()->routeIs('BlogDetail') ? 'active' : '' }}" href="{{ route('Blog') }}"><span>Blog</span></a></li>
+                                                {{-- Nav hidden; routes still work: /blog, /faqs, /membership_plans --}}
+                                                {{-- <li><a class="{{ request()->routeIs('Blog') || request()->routeIs('BlogDetail') ? 'active' : '' }}" href="{{ route('Blog') }}"><span>Blog</span></a></li> --}}
                                                 <li><a href="{{ route('about') }}"><span>About us</span></a></li>
                                                 <li><a href="{{ route('Contact') }}"><span>Contact us</span></a></li>
-                                                <li><a href="{{ route('faqs') }}"><span>FAQs</span></a></li>
-                                                <li><a href="{{ route('membership') }}"><span>Membership plans</span></a></li>
+                                                {{-- <li><a href="{{ route('faqs') }}"><span>FAQs</span></a></li> --}}
+                                                {{-- <li><a href="{{ route('membership') }}"><span>Membership plans</span></a></li> --}}
                                             </ul>
                                         </li>
-                                        <li><a class="{{ request()->routeIs('Zoom') ? 'active' : '' }}" href="{{ route('Zoom') }}"><span>Zoom Meetings</span></a></li>
+                                        {{-- Nav hidden; /zoom still works --}}
+                                        {{-- <li><a class="{{ request()->routeIs('Zoom') ? 'active' : '' }}" href="{{ route('Zoom') }}"><span>Zoom Meetings</span></a></li> --}}
                                     </ul>
                                 </nav>
                             </div>
